@@ -1,0 +1,362 @@
+/* Global Theme for Ar Rahman Trust Admin Portal */
+:root {
+  --primary-navy: #0f3d63;
+  --primary-navy-dark: #0a2740;
+  --primary-navy-light: #16568a;
+  --accent-green: #198754;
+  --accent-green-light: #e8f5e9;
+  --accent-amber: #d97706;
+  --bg-page: #f4f6f9;
+  --bg-card: #ffffff;
+  --border-color: #e5e7eb;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --sidebar-width: 260px;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Typography & Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  color: var(--primary-navy);
+  letter-spacing: -0.02em;
+}
+
+/* Common Card Styling */
+.admin-card {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(15, 61, 99, 0.03);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-card:hover {
+  box-shadow: 0 4px 14px rgba(15, 61, 99, 0.08);
+}
+
+.card-header-clean {
+  background: transparent;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 1.1rem 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-title-clean {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--primary-navy);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Metric / Stat Cards */
+.stat-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid var(--border-color);
+  background: #ffffff;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.stat-icon-wrapper {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 0.2rem;
+}
+
+.stat-value {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--primary-navy);
+  margin-bottom: 0;
+  line-height: 1.2;
+}
+
+/* Custom Buttons */
+.btn-trust-primary {
+  background-color: var(--primary-navy);
+  color: #ffffff;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 0.55rem 1.15rem;
+  transition: all 0.2s ease;
+}
+
+.btn-trust-primary:hover {
+  background-color: var(--primary-navy-dark);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.btn-trust-success {
+  background-color: var(--accent-green);
+  color: #ffffff;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  padding: 0.55rem 1.15rem;
+  transition: all 0.2s ease;
+}
+
+.btn-trust-success:hover {
+  background-color: #146c43;
+  color: #ffffff;
+}
+
+.btn-trust-outline {
+  border: 1px solid var(--border-color);
+  background: #ffffff;
+  color: var(--primary-navy);
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.btn-trust-outline:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+/* Modern Badges */
+.badge-soft-success {
+  background-color: #d1fae5;
+  color: #065f46;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+}
+
+.badge-soft-warning {
+  background-color: #fef3c7;
+  color: #92400e;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+}
+
+.badge-soft-danger {
+  background-color: #fee2e2;
+  color: #991b1b;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+}
+
+.badge-soft-info {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+}
+
+.badge-soft-primary {
+  background-color: #e0f2fe;
+  color: #0f3d63;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+}
+
+/* Table Enhancements */
+.admin-table {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.admin-table th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  font-weight: 700;
+  padding: 0.85rem 1rem;
+  background-color: #f8fafc;
+  border-top: none;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-table td {
+  padding: 0.9rem 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.875rem;
+}
+
+.admin-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Form Controls */
+.form-control, .form-select {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.9rem;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary-navy-light);
+  box-shadow: 0 0 0 3px rgba(15, 61, 99, 0.15);
+}
+
+/* Loading Spinner */
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+}
+
+/* Responsive Receipt Voucher & Modal Styling */
+.receipt-paper {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  border-bottom: 2.5px solid #0F3D63 !important;
+}
+
+/* Modal Scrollability and Height Constraints for Laptops & Mobile */
+.receipt-modal-dialog {
+  max-width: 820px !important;
+  margin: 0.75rem auto !important;
+}
+
+.receipt-modal-content {
+  max-height: 94vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+.receipt-modal-body {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch !important;
+  max-height: calc(94vh - 130px) !important;
+}
+
+@media (max-width: 576px) {
+  .receipt-paper {
+    padding: 0.85rem !important;
+    border-width: 1.5px !important;
+    border-radius: 8px !important;
+  }
+  
+  .receipt-modal-dialog {
+    margin: 0.25rem !important;
+    max-width: 100% !important;
+  }
+  
+  .receipt-modal-content {
+    max-height: 98vh !important;
+  }
+  
+  .receipt-modal-body {
+    padding: 0.5rem !important;
+    max-height: calc(98vh - 120px) !important;
+  }
+
+  .modal-footer {
+    padding: 0.5rem !important;
+  }
+}
+
+/* Print Styles: When printing or saving to PDF, show ONLY the receipt voucher */
+@media print {
+  /* Set clean background and zero margins for A4 print */
+  body {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide absolutely everything on the page by default */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Make ONLY the receipt paper and all its children visible */
+  #printableReceiptModal,
+  #printableReceiptModal *,
+  #printableReceiptA4,
+  #printableReceiptA4 *,
+  #printableReceipt,
+  #printableReceipt * {
+    visibility: visible !important;
+  }
+
+  /* Position the receipt cleanly at the top-left of the printed page */
+  #printableReceiptModal,
+  #printableReceipt {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    border: 2px solid #0F3D63 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    box-sizing: border-box !important;
+    page-break-inside: avoid !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 8mm;
+  }
+}

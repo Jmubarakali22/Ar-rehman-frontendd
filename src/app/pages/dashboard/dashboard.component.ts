@@ -1,0 +1,297 @@
+import { Component, OnInit, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { ApiService } from '../../core/services/api.service';
+import { DashboardStats, Donation } from '../../core/models/models';
+
+@Component({
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [CommonModule, RouterLink],
+  template: `
+    <div class="dashboard-page">
+      <!-- Welcome Banner -->
+      <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+        <div>
+          <h2 class="h4 fw-bold mb-1" style="color: #0F3D63;">
+            Ar Rahman Trust Overview
+          </h2>
+          <p class="text-muted small mb-0">
+            Charity Operations &bull; Pernambut & Surrounding Rural Villages (Reg: 04/16/2020)
+          </p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-outline-secondary btn-sm" (click)="loadDashboard()">
+            <i class="bi bi-arrow-clockwise me-1"></i> Refresh
+          </button>
+          <a routerLink="/donations" class="btn btn-trust-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i> New Donation
+          </a>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      @if (isLoading()) {
+        <div class="spinner-container">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+      } @else {
+        <!-- Metric Cards Grid -->
+        <div class="row g-3 mb-4">
+          <!-- Total Donations -->
+          <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+              <div class="stat-icon-wrapper" style="background: #e0f2fe; color: #0284c7;">
+                <i class="bi bi-wallet2"></i>
+              </div>
+              <div>
+                <div class="stat-label">Total Donations</div>
+                <div class="stat-value">₹{{ stats()?.totalDonationsAmount | number:'1.0-0' }}</div>
+                <div class="small text-muted mt-1">{{ stats()?.totalDonationsCount }} donations received</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Zakat -->
+          <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+              <div class="stat-icon-wrapper" style="background: #dcfce7; color: #16a34a;">
+                <i class="bi bi-shield-check"></i>
+              </div>
+              <div>
+                <div class="stat-label">Zakat Collected</div>
+                <div class="stat-value text-success">₹{{ stats()?.totalZakat | number:'1.0-0' }}</div>
+                <div class="small text-muted mt-1">Dedicated Zakat Fund</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Sadaqah -->
+          <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+              <div class="stat-icon-wrapper" style="background: #fef3c7; color: #d97706;">
+                <i class="bi bi-heart-fill"></i>
+              </div>
+              <div>
+                <div class="stat-label">Sadaqah Collected</div>
+                <div class="stat-value" style="color: #d97706;">₹{{ stats()?.totalSadaqah | number:'1.0-0' }}</div>
+                <div class="small text-muted mt-1">General Sadaqah & Aid</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Causes -->
+          <div class="col-sm-6 col-xl-3">
+            <div class="stat-card">
+              <div class="stat-icon-wrapper" style="background: #f3e8ff; color: #9333ea;">
+                <i class="bi bi-diagram-3-fill"></i>
+              </div>
+              <div>
+                <div class="stat-label">Active Causes</div>
+                <div class="stat-value" style="color: #9333ea;">{{ stats()?.activeCauses }} / {{ stats()?.totalCauses }}</div>
+                <div class="small text-muted mt-1">₹{{ stats()?.totalRaised | number:'1.0-0' }} raised</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Secondary Metrics Grid -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3">
+            <div class="p-3 bg-white rounded-3 border d-flex align-items-center gap-3">
+              <i class="bi bi-people text-primary fs-3"></i>
+              <div>
+                <div class="small text-muted fw-semibold">Volunteers</div>
+                <div class="fw-bold fs-5 text-dark">{{ stats()?.totalVolunteers }} Registered</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-md-3">
+            <div class="p-3 bg-white rounded-3 border d-flex align-items-center gap-3">
+              <i class="bi bi-images text-info fs-3"></i>
+              <div>
+                <div class="small text-muted fw-semibold">Gallery Photos</div>
+                <div class="fw-bold fs-5 text-dark">{{ stats()?.totalPhotos }} Photos</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-md-3">
+            <div class="p-3 bg-white rounded-3 border d-flex align-items-center gap-3">
+              <i class="bi bi-chat-left-dots text-warning fs-3"></i>
+              <div>
+                <div class="small text-muted fw-semibold">Inquiries</div>
+                <div class="fw-bold fs-5 text-dark">
+                  {{ stats()?.totalInquiries }} Total
+                  @if (stats()?.unreadInquiries) {
+                    <span class="badge bg-danger ms-1">{{ stats()?.unreadInquiries }} new</span>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-md-3">
+            <div class="p-3 bg-white rounded-3 border d-flex align-items-center gap-3">
+              <i class="bi bi-clock-history text-secondary fs-3"></i>
+              <div>
+                <div class="small text-muted fw-semibold">Pending Verifications</div>
+                <div class="fw-bold fs-5 text-dark">{{ stats()?.pendingDonationsCount }} items</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Dashboard Split View -->
+        <div class="row g-4 mb-4">
+          <!-- Recent Donations Table -->
+          <div class="col-lg-8">
+            <div class="admin-card">
+              <div class="card-header-clean">
+                <h5 class="card-title-clean">
+                  <i class="bi bi-clock-history text-primary"></i> Recent Donations
+                </h5>
+                <a routerLink="/donations" class="btn btn-sm btn-link text-decoration-none">View All</a>
+              </div>
+              <div class="table-responsive">
+                <table class="table admin-table mb-0">
+                  <thead>
+                    <tr>
+                      <th>Donor</th>
+                      <th>Type</th>
+                      <th>Amount</th>
+                      <th>Method</th>
+                      <th>Status</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (item of recentDonations(); track item.id) {
+                      <tr>
+                        <td>
+                          <div class="fw-semibold text-dark">{{ item.donor_name }}</div>
+                          <div class="small text-muted">{{ item.donor_phone }}</div>
+                        </td>
+                        <td>
+                          <span class="badge" [ngClass]="item.donation_type === 'zakat' ? 'bg-success' : 'bg-primary'">
+                            {{ item.donation_type | uppercase }}
+                          </span>
+                        </td>
+                        <td class="fw-bold text-dark">₹{{ item.amount | number:'1.2-2' }}</td>
+                        <td>
+                          <span class="text-uppercase small fw-semibold text-secondary">{{ item.payment_method }}</span>
+                        </td>
+                        <td>
+                          <span class="badge" [ngClass]="{
+                            'badge-soft-success': item.status === 'verified' || item.status === 'completed',
+                            'badge-soft-warning': item.status === 'pending',
+                            'badge-soft-danger': item.status === 'failed'
+                          }">
+                            {{ item.status }}
+                          </span>
+                        </td>
+                        <td class="small text-muted">{{ item.created_at | date:'shortDate' }}</td>
+                      </tr>
+                    } @empty {
+                      <tr>
+                        <td colspan="6" class="text-center py-4 text-muted">No donations recorded yet.</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions & Donation Types Breakdown -->
+          <div class="col-lg-4">
+            <!-- Donation Breakdown Card -->
+            <div class="admin-card mb-4">
+              <div class="card-header-clean">
+                <h5 class="card-title-clean">
+                  <i class="bi bi-pie-chart-fill text-success"></i> Fund Distribution
+                </h5>
+              </div>
+              <div class="p-3">
+                @for (tb of typeBreakdown(); track tb.donation_type) {
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between small fw-semibold mb-1">
+                      <span class="text-capitalize">{{ tb.donation_type }} ({{ tb.count }})</span>
+                      <span class="text-dark">₹{{ tb.total_amount | number:'1.0-0' }}</span>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                      <div 
+                        class="progress-bar" 
+                        role="progressbar" 
+                        [style.width.%]="stats()?.totalDonationsAmount ? (tb.total_amount / (stats()?.totalDonationsAmount || 1) * 100) : 0"
+                        [ngClass]="tb.donation_type === 'zakat' ? 'bg-success' : 'bg-primary'"
+                      ></div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Quick Navigation Hub -->
+            <div class="admin-card">
+              <div class="card-header-clean">
+                <h5 class="card-title-clean">
+                  <i class="bi bi-lightning-charge-fill text-warning"></i> Quick Management
+                </h5>
+              </div>
+              <div class="p-3 d-grid gap-2">
+                <a routerLink="/donations" class="btn btn-outline-primary btn-sm text-start d-flex align-items-center justify-content-between">
+                  <span><i class="bi bi-receipt me-2"></i> Manage Donations & Receipts</span>
+                  <i class="bi bi-chevron-right"></i>
+                </a>
+                <a routerLink="/causes" class="btn btn-outline-success btn-sm text-start d-flex align-items-center justify-content-between">
+                  <span><i class="bi bi-plus-square me-2"></i> Create / Update Cause</span>
+                  <i class="bi bi-chevron-right"></i>
+                </a>
+                <a routerLink="/gallery" class="btn btn-outline-secondary btn-sm text-start d-flex align-items-center justify-content-between">
+                  <span><i class="bi bi-camera me-2"></i> Upload Trust Activity Photos</span>
+                  <i class="bi bi-chevron-right"></i>
+                </a>
+                <a routerLink="/inquiries" class="btn btn-outline-info btn-sm text-start d-flex align-items-center justify-content-between">
+                  <span><i class="bi bi-inbox me-2"></i> Review Website Messages</span>
+                  <i class="bi bi-chevron-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  `
+})
+export class DashboardComponent implements OnInit {
+  isLoading = signal(true);
+  stats = signal<DashboardStats | null>(null);
+  recentDonations = signal<Donation[]>([]);
+  typeBreakdown = signal<any[]>([]);
+
+  constructor(private apiService: ApiService) {}
+
+  ngOnInit(): void {
+    this.loadDashboard();
+  }
+
+  loadDashboard(): void {
+    this.isLoading.set(true);
+    this.apiService.getDashboardStats().subscribe({
+      next: (res) => {
+        if (res.success) {
+          this.stats.set(res.stats);
+          this.recentDonations.set(res.recentDonations || []);
+          this.typeBreakdown.set(res.typeBreakdown || []);
+        }
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load dashboard stats:', err);
+        this.isLoading.set(false);
+      }
+    });
+  }
+}
