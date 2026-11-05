@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
@@ -84,14 +84,42 @@ import { Donation } from '../../core/models/models';
         </div>
       </div>
 
+      <!-- Bulk Selection & Action Bar -->
+      @if (selectedDonationIds().size > 0) {
+        <div class="alert alert-primary d-flex flex-wrap align-items-center justify-content-between p-3 mb-3 shadow-sm border-0" style="background: linear-gradient(135deg, #0F3D63, #1e3a8a); color: #fff; border-radius: 10px;">
+          <div class="d-flex align-items-center gap-2 mb-2 mb-sm-0">
+            <span class="badge bg-white text-dark fs-6">{{ selectedDonationIds().size }}</span>
+            <span class="fw-semibold">Donor{{ selectedDonationIds().size > 1 ? 's' : '' }} Selected</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-warning btn-sm fw-bold px-3 shadow-sm text-dark" (click)="openBulkReminderModal()">
+              <i class="bi bi-bell-fill me-1"></i> Send WhatsApp Reminder ({{ selectedDonationIds().size }})
+            </button>
+            <button class="btn btn-outline-light btn-sm" (click)="clearSelection()">
+              Clear Selection
+            </button>
+          </div>
+        </div>
+      }
+
       <!-- Donations Table Card -->
       <div class="admin-card">
         <div class="table-responsive">
           <table class="table admin-table mb-0 align-middle">
             <thead>
               <tr>
+                <th style="width: 42px;" class="text-center">
+                  <input 
+                    type="checkbox" 
+                    class="form-check-input" 
+                    [checked]="isAllSelected()" 
+                    [indeterminate]="isSomeSelected()" 
+                    (change)="toggleSelectAll($event)"
+                    title="Select / Deselect all on this page"
+                  >
+                </th>
                 <th>Receipt #</th>
-                <th>Donor Name & Phone</th>
+                <th>Donor Name &amp; Phone</th>
                 <th>Amount</th>
                 <th>Type</th>
                 <th>Method</th>
@@ -104,13 +132,21 @@ import { Donation } from '../../core/models/models';
             <tbody>
               @if (isLoading()) {
                 <tr>
-                  <td colspan="9" class="text-center py-5">
+                  <td colspan="10" class="text-center py-5">
                     <div class="spinner-border text-primary" role="status"></div>
                   </td>
                 </tr>
               } @else {
                 @for (item of donations(); track item.id) {
-                  <tr>
+                  <tr [class.table-primary]="isSelected(item.id)">
+                    <td class="text-center">
+                      <input 
+                        type="checkbox" 
+                        class="form-check-input" 
+                        [checked]="isSelected(item.id)" 
+                        (change)="toggleSelect(item.id)"
+                      >
+                    </td>
                     <td>
                       <span class="badge bg-light text-dark border font-monospace">{{ item.receipt_number || ('ART-' + item.id) }}</span>
                     </td>
@@ -152,8 +188,12 @@ import { Donation } from '../../core/models/models';
                           <i class="bi bi-file-earmark-pdf"></i>
                         </button>
                         <!-- Send PDF Receipt on WhatsApp -->
-                        <button class="btn btn-outline-success" title="Send PDF Receipt on WhatsApp" (click)="openWhatsAppModal(item)" style="color: #25D366; border-color: #25D366;">
+                        <button class="btn btn-outline-success" title="Send Official PDF Receipt on WhatsApp" (click)="openWhatsAppModal(item)" style="color: #25D366; border-color: #25D366;">
                           <i class="bi bi-whatsapp"></i>
+                        </button>
+                        <!-- Send WhatsApp Reminder (Single) -->
+                        <button class="btn btn-outline-warning" title="Send WhatsApp Donation Reminder to this donor" (click)="openSingleReminderModal(item)" style="color: #d97706; border-color: #f59e0b;">
+                          <i class="bi bi-bell-fill"></i>
                         </button>
                         <!-- Receipt View / Print -->
                         <button class="btn btn-outline-secondary" title="View Full Receipt" (click)="viewReceipt(item)">
@@ -172,7 +212,7 @@ import { Donation } from '../../core/models/models';
                   </tr>
                 } @empty {
                   <tr>
-                    <td colspan="9" class="text-center py-5 text-muted">
+                    <td colspan="10" class="text-center py-5 text-muted">
                       No donations match your filter criteria.
                     </td>
                   </tr>
@@ -683,6 +723,194 @@ import { Donation } from '../../core/models/models';
         </div>
       </div>
     }
+
+    <!-- WHATSAPP DONATION REMINDER MODAL (Single & Multiple Bulk Donors) -->
+    @if (showReminderModal()) {
+      <div class="modal fade show d-block" style="background: rgba(0,0,0,0.6);" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+          <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header text-white py-2 px-3" style="background: linear-gradient(135deg, #075E54, #128C7E);">
+              <h6 class="modal-title fw-bold mb-0 d-flex align-items-center">
+                <i class="bi bi-bell-fill text-warning me-2 fs-5"></i>
+                Send WhatsApp Donation Reminder
+                <span class="badge bg-white text-dark ms-2 fw-semibold" style="font-size: 11px;">
+                  {{ reminderRecipients().length }} Donor{{ reminderRecipients().length > 1 ? 's' : '' }} Selected
+                </span>
+              </h6>
+              <button type="button" class="btn-close btn-close-white" (click)="showReminderModal.set(false)"></button>
+            </div>
+
+            <div class="modal-body p-3 p-md-4">
+              <!-- Recipient List Card -->
+              <div class="p-3 bg-light rounded-3 mb-3 border">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="small fw-bold text-uppercase text-secondary" style="font-size: 11px;">
+                    Target Recipients ({{ reminderRecipients().length }})
+                  </span>
+                  @if (reminderRecipients().length > 1) {
+                    <span class="small text-muted" style="font-size: 11px;">Click &times; on any badge to remove donor</span>
+                  }
+                </div>
+                <div class="d-flex flex-wrap gap-2" style="max-height: 120px; overflow-y: auto;">
+                  @for (r of reminderRecipients(); track r.id) {
+                    <span class="badge bg-white text-dark border d-flex align-items-center gap-1 py-1 px-2 shadow-sm">
+                      <i class="bi bi-person-fill text-primary"></i>
+                      <strong>{{ r.donor_name }}</strong>
+                      <span class="text-muted font-monospace" style="font-size: 10px;">{{ r.donor_phone }}</span>
+                      <button type="button" class="btn-close ms-1" style="font-size: 8px;" (click)="removeRecipientFromReminder(r.id)"></button>
+                    </span>
+                  }
+                </div>
+              </div>
+
+              <!-- Reminder Appeal Category / Template Selection -->
+              <div class="row g-2 mb-3">
+                <div class="col-12 col-md-6">
+                  <label class="form-label small fw-bold">Select Reminder Template</label>
+                  <select class="form-select form-select-sm" [(ngModel)]="reminderTemplateType" (change)="onReminderTemplateChange()">
+                    <option value="monthly">🌙 Monthly Donation Renewal Appeal</option>
+                    <option value="friday">🕌 Jumu'ah (Friday) Sadaqah Appeal</option>
+                    <option value="food">🍲 Food &amp; Ration Kit Distribution Drive</option>
+                    <option value="medical">🏥 Emergency Medical Relief Appeal</option>
+                    <option value="custom">✏️ Custom Message</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-6 d-flex align-items-end">
+                  <div class="small text-muted p-2 rounded bg-light border w-100" style="font-size: 11px;">
+                    <strong>Available Placeholders:</strong> <code>&#123;name&#125;</code> (donor name), <code>&#123;cause&#125;</code> (purpose), <code>&#123;amount&#125;</code>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Message Textarea -->
+              <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <label class="form-label small fw-bold mb-0">Message Content (WhatsApp Formatted)</label>
+                  <span class="small text-muted" style="font-size: 11px;">Supports *bold*, _italic_</span>
+                </div>
+                <textarea 
+                  class="form-control font-monospace" 
+                  rows="9" 
+                  [(ngModel)]="reminderCustomMessage"
+                  style="font-size: 12.5px; line-height: 1.5;"
+                  placeholder="Type your reminder message here..."
+                  required
+                ></textarea>
+              </div>
+
+              <!-- Progress & Success/Error Alerts -->
+              @if (reminderProgress()) {
+                <div class="alert alert-info d-flex align-items-center p-3 mb-3">
+                  <span class="spinner-border spinner-border-sm me-2 text-info" role="status"></span>
+                  <div>
+                    <div class="fw-bold small">Sending in Progress...</div>
+                    <div class="small">{{ reminderProgress() }}</div>
+                  </div>
+                </div>
+              }
+
+              @if (reminderSuccess()) {
+                <div class="alert alert-success d-flex align-items-center p-3 mb-3">
+                  <i class="bi bi-check-circle-fill fs-4 me-2 text-success"></i>
+                  <div>
+                    <div class="fw-bold">Delivered!</div>
+                    <div class="small">{{ reminderSuccess() }}</div>
+                  </div>
+                </div>
+              }
+
+              @if (reminderError()) {
+                <div class="alert alert-danger d-flex align-items-center p-3 mb-3">
+                  <i class="bi bi-exclamation-triangle-fill fs-4 me-2 text-danger"></i>
+                  <div>
+                    <div class="fw-bold">Send Failed</div>
+                    <div class="small">{{ reminderError() }}</div>
+                  </div>
+                </div>
+              }
+
+              <!-- WhatsApp Automated Engine Connection Status Card -->
+              @if (whatsAppStatus()?.connected) {
+                <div class="p-2 px-3 rounded-2 mb-2 border bg-success-subtle text-success-emphasis d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-fill-check fs-4 text-success"></i>
+                    <div>
+                      <div class="fw-bold small">WhatsApp Connected &amp; Ready</div>
+                      <div class="text-muted small" style="font-size: 11px;">Linked sender account: <strong>+{{ whatsAppStatus()?.connectedNumber }}</strong></div>
+                    </div>
+                  </div>
+                  <button type="button" class="btn btn-outline-danger btn-sm py-0 px-2" (click)="logoutWhatsApp()">Unlink</button>
+                </div>
+              } @else {
+                <div class="border rounded-3 p-3 mb-2 bg-light text-center">
+                  <div class="fw-bold text-dark small mb-1">
+                    <i class="bi bi-qr-code-scan text-success me-1"></i>Link WhatsApp for 1-Click Sending (One-Time)
+                  </div>
+                  <p class="text-muted small mb-2" style="font-size: 11px;">
+                    Open WhatsApp on phone ➔ <strong>Settings ➔ Linked Devices ➔ Link a Device</strong> and scan:
+                  </p>
+                  @if (whatsAppStatus()?.qr) {
+                    <div class="d-inline-block bg-white p-2 rounded border shadow-sm">
+                      <img [src]="whatsAppStatus()?.qr" alt="WhatsApp QR Code" style="width: 150px; height: 150px; display: block;">
+                    </div>
+                  } @else {
+                    <div class="p-2 text-muted small">
+                      <span class="spinner-border spinner-border-sm me-1 text-success"></span> Generating WhatsApp QR Code...
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer bg-light border-top py-2 px-3 d-flex flex-wrap justify-content-between gap-2">
+              <button type="button" class="btn btn-secondary btn-sm" (click)="showReminderModal.set(false)">
+                Cancel
+              </button>
+
+              <div class="d-flex flex-wrap gap-2">
+                @if (reminderRecipients().length === 1 && !whatsAppStatus()?.connected) {
+                  <!-- Fallback open chat in WhatsApp Web for single recipient if server is not connected -->
+                  <button 
+                    type="button" 
+                    class="btn btn-outline-success btn-sm px-3"
+                    (click)="openReminderInWhatsAppWeb(reminderRecipients()[0])"
+                  >
+                    <i class="bi bi-whatsapp me-1"></i> Open in WhatsApp Web
+                  </button>
+                }
+
+                @if (whatsAppStatus()?.connected) {
+                  <!-- Direct 1-Click Automated Sending Button -->
+                  <button 
+                    type="button" 
+                    class="btn btn-success btn-sm px-3 fw-bold" 
+                    [disabled]="!reminderRecipients().length || !reminderCustomMessage.trim() || isSendingReminder()" 
+                    (click)="sendWhatsAppReminders()" 
+                    style="background-color: #25D366; border-color: #25D366;"
+                  >
+                    @if (isSendingReminder()) {
+                      <span class="spinner-border spinner-border-sm me-1" role="status"></span> Sending Reminders...
+                    } @else {
+                      <i class="bi bi-send-fill me-1"></i> Send Reminders Directly ({{ reminderRecipients().length }})
+                    }
+                  </button>
+                } @else {
+                  <button 
+                    type="button" 
+                    class="btn btn-success btn-sm px-3" 
+                    disabled
+                    style="background-color: #25D366; border-color: #25D366;"
+                  >
+                    <i class="bi bi-qr-code-scan me-1"></i> Scan QR Above to Send
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
   `
 })
 export class DonationsComponent implements OnInit {
@@ -717,6 +945,140 @@ export class DonationsComponent implements OnInit {
   directSendSuccess = signal<string | null>(null);
   directSendError = signal<string | null>(null);
   private statusPollTimer: any = null;
+
+  // Selection state for single & bulk reminders
+  selectedDonationIds = signal<Set<number>>(new Set());
+
+  isAllSelected = computed(() => {
+    const list = this.donations();
+    if (!list.length) return false;
+    const selected = this.selectedDonationIds();
+    return list.every(d => selected.has(d.id));
+  });
+
+  isSomeSelected = computed(() => {
+    const list = this.donations();
+    if (!list.length) return false;
+    const selected = this.selectedDonationIds();
+    const count = list.filter(d => selected.has(d.id)).length;
+    return count > 0 && count < list.length;
+  });
+
+  // Reminder Modal State
+  showReminderModal = signal(false);
+  reminderRecipients = signal<Donation[]>([]);
+  reminderTemplateType = 'monthly';
+  reminderCustomMessage = '';
+  isSendingReminder = signal(false);
+  reminderSuccess = signal<string | null>(null);
+  reminderError = signal<string | null>(null);
+  reminderProgress = signal<string | null>(null);
+
+  reminderTemplates: { [key: string]: string } = {
+    monthly: `*AR RAHMAN TRUST - MONTHLY SADAQAH REMINDER*
+_Helping Needy People • Pernambut & Surrounding Villages_
+*Regd. Charity No:* 04/16/2020
+----------------------------------------
+Assalamu Alaikum wa Rahmatullahi wa Barakatuh *{name}*,
+
+We pray this message reaches you and your family in good health and highest iman.
+
+As Allah (SWT) reminds us in the Holy Quran:
+_"The example of those who spend their wealth in the way of Allah is like a seed of grain which grows seven spikes; in each spike is a hundred grains." (Al-Baqarah 2:261)_
+
+Your noble past contributions have brought direct food, emergency medicine, and educational aid to needy families across Pernambut.
+
+As our charity drives continue for this month, we humbly invite you to renew your noble contribution for:
+🤲 *{cause}*
+
+💳 *Trust Official Bank & UPI Details:*
+• *Bank:* State Bank of India (Pernambut Branch)
+• *Account Name:* Ar Rahman Trust
+• *Account No:* 39485710293
+• *IFSC Code:* SBIN0001824
+• *UPI ID / GPay / PhonePe:* arrahmantrust@sbi
+• *Registered Charity No:* 04/16/2020
+
+"May Allah (SWT) accept your charity, grant immense barakah in your wealth, and safeguard your family. Jazakallahu Khairan."
+
+*Ar Rahman Trust, Pernambut*
+📞 Inquiries / Office: +91 96290 88776`,
+
+    friday: `*JUMU'AH MUBARAK - NOBLE SADAQAH APPEAL*
+*Ar Rahman Trust, Pernambut* • *Regd. No:* 04/16/2020
+----------------------------------------
+Assalamu Alaikum *{name}*,
+
+Jumu'ah Mubarak! On this auspicious day of Friday, our Prophet (ﷺ) reminded us:
+_"Giving charity on Friday is better than giving it on any other day of the week."_
+
+We invite you to earn multiplied continuous rewards (Sadaqah Jariyah) today by contributing to:
+🤲 *{cause}*
+
+💳 *Quick UPI / Online Transfer:*
+• *UPI ID:* arrahmantrust@sbi
+• *GPay / PhonePe / Paytm Accepted*
+• *Bank:* SBI Pernambut | A/C: 39485710293 (IFSC: SBIN0001824)
+
+May Allah (SWT) accept your prayers, multiply your sustenance, and protect your loved ones. Jazakallahu Khairan!
+
+*Ar Rahman Trust, Pernambut*`,
+
+    food: `*URGENT FOOD & RATION KIT DRIVE - AR RAHMAN TRUST*
+_Pernambut & Surrounding Rural Villages_ • *Regd:* 04/16/2020
+----------------------------------------
+Assalamu Alaikum *{name}*,
+
+Ar Rahman Trust is currently distributing essential monthly dry food kits (rice, oil, dal, spices) and cooked meals to vulnerable widows, daily-wage laborers, and destitute elderly families in Pernambut.
+
+🤲 *Each Ration Kit:* ₹1,500
+🤲 *Hot Meals for 50 People:* ₹2,500
+
+We humbly request your generous support to ensure no poor family in our villages sleeps hungry tonight.
+
+💳 *Send Contribution via UPI / Bank:*
+• *UPI ID:* arrahmantrust@sbi
+• *Bank:* State Bank of India (A/C: 39485710293 | IFSC: SBIN0001824)
+
+"Whoever feeds a hungry person, Allah will feed him from the fruits of Paradise." (Tirmidhi)
+
+*Ar Rahman Trust, Pernambut*`,
+
+    medical: `*EMERGENCY MEDICAL RELIEF APPEAL - AR RAHMAN TRUST*
+_Pernambut & Vellore Dist._ • *Regd. Charity No:* 04/16/2020
+----------------------------------------
+Assalamu Alaikum *{name}*,
+
+Ar Rahman Trust has received urgent appeals from impoverished village families struggling to afford life-saving medications, dialysis, and emergency surgeries for elderly patients and sick children.
+
+We humbly seek your kind assistance to provide critical medical aid for these deserving patients:
+🤲 *Urgent Healthcare Relief:* {cause}
+
+💳 *Official Trust Payment Details:*
+• *UPI ID:* arrahmantrust@sbi
+• *Bank Transfer:* SBI Pernambut | A/C: 39485710293 | IFSC: SBIN0001824
+
+"Whoever relieves a Muslim of a burden from this world, Allah will relieve him of a burden on the Day of Resurrection." (Muslim)
+
+*Ar Rahman Trust, Pernambut*`,
+
+    custom: `*AR RAHMAN TRUST - CHARITY APPEAL*
+_Pernambut, Vellore Dist._ • *Regd:* 04/16/2020
+----------------------------------------
+Assalamu Alaikum *{name}*,
+
+We pray you and your family are in good health.
+
+Ar Rahman Trust invites your kind support for our ongoing welfare programs:
+🤲 *{cause}*
+
+💳 *UPI ID:* arrahmantrust@sbi
+• *Bank:* State Bank of India (A/C: 39485710293 | IFSC: SBIN0001824)
+
+Jazakallahu Khairan for your continuous benevolence and trust.
+
+*Ar Rahman Trust, Pernambut*`
+  };
 
   constructor(private apiService: ApiService, private whatsappService: WhatsAppService) {}
 
@@ -1049,6 +1411,128 @@ export class DonationsComponent implements OnInit {
         this.directSendError.set(err.error?.message || 'Failed to send WhatsApp PDF. Please check connection.');
       }
     });
+  }
+
+  toggleSelect(id: number): void {
+    const current = new Set(this.selectedDonationIds());
+    if (current.has(id)) {
+      current.delete(id);
+    } else {
+      current.add(id);
+    }
+    this.selectedDonationIds.set(current);
+  }
+
+  toggleSelectAll(event: any): void {
+    const checked = event.target.checked;
+    const current = new Set(this.selectedDonationIds());
+    const list = this.donations();
+    if (checked) {
+      list.forEach(d => current.add(d.id));
+    } else {
+      list.forEach(d => current.delete(d.id));
+    }
+    this.selectedDonationIds.set(current);
+  }
+
+  clearSelection(): void {
+    this.selectedDonationIds.set(new Set());
+  }
+
+  isSelected(id: number): boolean {
+    return this.selectedDonationIds().has(id);
+  }
+
+  openSingleReminderModal(donation: Donation): void {
+    this.reminderRecipients.set([donation]);
+    this.reminderTemplateType = 'monthly';
+    this.reminderCustomMessage = this.reminderTemplates['monthly'];
+    this.reminderSuccess.set(null);
+    this.reminderError.set(null);
+    this.reminderProgress.set(null);
+    this.showReminderModal.set(true);
+    this.pollWhatsAppStatus();
+  }
+
+  openBulkReminderModal(): void {
+    const selectedIds = this.selectedDonationIds();
+    const all = this.donations();
+    const recipients = all.filter(d => selectedIds.has(d.id));
+    if (!recipients.length) return;
+    this.reminderRecipients.set(recipients);
+    this.reminderTemplateType = 'monthly';
+    this.reminderCustomMessage = this.reminderTemplates['monthly'];
+    this.reminderSuccess.set(null);
+    this.reminderError.set(null);
+    this.reminderProgress.set(null);
+    this.showReminderModal.set(true);
+    this.pollWhatsAppStatus();
+  }
+
+  removeRecipientFromReminder(donationId: number): void {
+    const updated = this.reminderRecipients().filter(d => d.id !== donationId);
+    this.reminderRecipients.set(updated);
+    if (!updated.length) {
+      this.showReminderModal.set(false);
+    }
+  }
+
+  onReminderTemplateChange(): void {
+    this.reminderCustomMessage = this.reminderTemplates[this.reminderTemplateType] || '';
+  }
+
+  sendWhatsAppReminders(): void {
+    const recipients = this.reminderRecipients();
+    if (!recipients.length || !this.reminderCustomMessage.trim()) return;
+
+    this.isSendingReminder.set(true);
+    this.reminderError.set(null);
+    this.reminderSuccess.set(null);
+    this.reminderProgress.set(`Delivering to ${recipients.length} donor(s)...`);
+
+    this.whatsappService.sendReminder({
+      recipients: recipients.map(d => ({
+        id: d.id,
+        donor_name: d.donor_name,
+        donor_phone: d.donor_phone,
+        donation_type: d.donation_type,
+        amount: d.amount
+      })),
+      messageTemplate: this.reminderCustomMessage
+    }).subscribe({
+      next: (res) => {
+        this.isSendingReminder.set(false);
+        this.reminderProgress.set(null);
+        if (res.success) {
+          this.reminderSuccess.set(`Successfully delivered WhatsApp reminder to ${res.summary.sent} donor(s)!`);
+          this.clearSelection();
+          setTimeout(() => {
+            this.showReminderModal.set(false);
+            this.reminderSuccess.set(null);
+          }, 3500);
+        }
+      },
+      error: (err) => {
+        this.isSendingReminder.set(false);
+        this.reminderProgress.set(null);
+        this.reminderError.set(err.error?.message || 'Failed to send WhatsApp reminder. Please check server connection.');
+      }
+    });
+  }
+
+  openReminderInWhatsAppWeb(donation: Donation): void {
+    let cleanPhone = (donation.donor_phone || '').replace(/\D/g, '');
+    if (cleanPhone.length === 10) cleanPhone = '91' + cleanPhone;
+    else if (cleanPhone.length === 11 && cleanPhone.startsWith('0')) cleanPhone = '91' + cleanPhone.substring(1);
+
+    const message = this.reminderCustomMessage
+      .replace(/\{name\}/gi, donation.donor_name)
+      .replace(/\{cause\}/gi, (donation.donation_type || 'General').toUpperCase())
+      .replace(/\{amount\}/gi, `₹${Number(donation.amount).toLocaleString('en-IN')}`);
+
+    const waUrl = `https://web.whatsapp.com/send?phone=${cleanPhone}&text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
+    this.showReminderModal.set(false);
   }
 
   exportToCSV(): void {

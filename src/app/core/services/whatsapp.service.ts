@@ -37,4 +37,14 @@ export class WhatsAppService {
     }
     return this.http.post<{ success: boolean; message: string }>(`${this.apiUrl}/send-pdf/${donationId}`, formData);
   }
+
+  sendReminder(payload: {
+    recipients: Array<{ id?: number; donor_name: string; donor_phone: string; donation_type?: string; amount?: number }>;
+    messageTemplate: string;
+  }): Observable<{ success: boolean; message: string; results: any[]; summary: { total: number; sent: number; failed: number } }> {
+    return this.http.post<{ success: boolean; message: string; results: any[]; summary: { total: number; sent: number; failed: number } }>(
+      `${this.apiUrl}/send-reminder`,
+      payload
+    );
+  }
 }
