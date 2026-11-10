@@ -185,7 +185,7 @@ import { AuthService } from '../../core/services/auth.service';
                       id="usernameInput"
                       type="text" 
                       class="custom-input" 
-                      placeholder="e.g. admin or trustee@arrahmantrust.org" 
+                      placeholder="e.g. arrahmantrust@gmail.com" 
                       [(ngModel)]="username" 
                       name="username" 
                       required
@@ -292,44 +292,6 @@ import { AuthService } from '../../core/services/auth.service';
                   }
                 </button>
               </form>
-
-              <!-- Demo Credentials Helper Box -->
-              <div class="demo-card mt-4">
-                <div class="demo-card-header d-flex align-items-center justify-content-between">
-                  <div class="d-flex align-items-center gap-2">
-                    <span class="demo-icon-tag">
-                      <i class="bi bi-lightning-charge-fill"></i>
-                    </span>
-                    <span class="demo-title">Quick Evaluation Credentials</span>
-                  </div>
-                  <button 
-                    type="button" 
-                    class="btn-demo-fill"
-                    [class.btn-demo-filled]="demoFilled()"
-                    (click)="fillDemoCredentials()"
-                    [disabled]="isLoading()"
-                  >
-                    @if (demoFilled()) {
-                      <i class="bi bi-check2-circle me-1"></i> Filled!
-                    } @else {
-                      <i class="bi bi-cursor-fill me-1"></i> Auto Fill
-                    }
-                  </button>
-                </div>
-                
-                <div class="demo-credentials-row mt-2">
-                  <div class="credential-chip" (click)="copyCredential('admin')">
-                    <span class="chip-label">User:</span>
-                    <span class="chip-value">admin</span>
-                    <i class="bi bi-clipboard ms-1 opacity-50"></i>
-                  </div>
-                  <div class="credential-chip" (click)="copyCredential('password123')">
-                    <span class="chip-label">Pass:</span>
-                    <span class="chip-value">password123</span>
-                    <i class="bi bi-clipboard ms-1 opacity-50"></i>
-                  </div>
-                </div>
-              </div>
             </div>
 
             <!-- Footer Details -->
@@ -384,10 +346,10 @@ import { AuthService } from '../../core/services/auth.service';
                 </div>
 
                 <div class="d-flex align-items-center gap-3">
-                  <i class="bi bi-patch-question-fill text-success fs-5"></i>
+                  <i class="bi bi-shield-lock-fill text-success fs-5"></i>
                   <div>
-                    <div class="fw-bold small text-navy">Default Demo Login</div>
-                    <div class="text-muted small">Username: <strong>admin</strong> | Password: <strong>password123</strong></div>
+                    <div class="fw-bold small text-navy">Administrative Access</div>
+                    <div class="text-muted small">Please use your authorized admin email (<strong>arrahmantrust&#64;gmail.com</strong>)</div>
                   </div>
                 </div>
               </div>
@@ -1110,7 +1072,6 @@ export class LoginComponent implements OnInit {
   errorMessage = signal<string | null>(null);
   capsLockOn = signal(false);
   showHelpModal = signal(false);
-  demoFilled = signal(false);
 
   usernameFocused = false;
   passwordFocused = false;
@@ -1137,28 +1098,6 @@ export class LoginComponent implements OnInit {
 
   toggleHelpModal(show: boolean): void {
     this.showHelpModal.set(show);
-  }
-
-  fillDemoCredentials(): void {
-    this.username = 'admin';
-    this.password = 'password123';
-    this.errorMessage.set(null);
-    this.demoFilled.set(true);
-    setTimeout(() => {
-      this.demoFilled.set(false);
-    }, 2000);
-  }
-
-  copyCredential(val: string): void {
-    if (val === 'admin') {
-      this.username = 'admin';
-    } else {
-      this.password = 'password123';
-    }
-    this.demoFilled.set(true);
-    setTimeout(() => {
-      this.demoFilled.set(false);
-    }, 1500);
   }
 
   onLogin(): void {
