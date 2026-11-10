@@ -1,7 +1,8 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { AutoLogoutService } from '../../core/services/auto-logout.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -144,6 +145,52 @@ import { AuthService } from '../../core/services/auth.service';
         <main class="page-body p-3 p-md-4 flex-grow-1">
           <router-outlet></router-outlet>
         </main>
+
+        <!-- Inactivity Countdown Warning Modal -->
+        @if (autoLogoutService.showWarningModal()) {
+          <div class="modal fade show d-block" style="background: rgba(10, 39, 64, 0.75); z-index: 1060; backdrop-filter: blur(4px);" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+              <div class="modal-content shadow-lg border-0 rounded-4 overflow-hidden">
+                <div class="modal-header border-0 pb-0 pt-4 px-4 bg-light">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-warning" style="width: 48px; height: 48px; background: #fef3c7; font-size: 1.5rem;">
+                      <i class="bi bi-clock-history"></i>
+                    </div>
+                    <div>
+                      <h5 class="modal-title fw-bold text-dark mb-0">Inactivity Warning</h5>
+                      <div class="text-muted small">Auto-logout protection active</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="modal-body p-4 text-center bg-light">
+                  <p class="text-secondary small mb-3">
+                    You have been inactive. For your security and to safeguard donor records, you will be automatically logged out in:
+                  </p>
+                  <div class="p-3 rounded-3 bg-white border shadow-sm my-3">
+                    <span class="fs-1 fw-bolder text-danger font-monospace">
+                      {{ autoLogoutService.countdownSeconds() }}
+                    </span>
+                    <span class="fs-5 text-danger fw-bold ms-1">s</span>
+                    <div class="text-muted small mt-1">Seconds remaining</div>
+                  </div>
+                  <p class="text-muted small mb-0">
+                    Click <strong>"Stay Logged In"</strong> or move your mouse / press any key to continue.
+                  </p>
+                </div>
+
+                <div class="modal-footer border-0 bg-white p-3 d-flex justify-content-between gap-2">
+                  <button type="button" class="btn btn-outline-danger btn-sm px-3 rounded-pill" (click)="autoLogoutService.logoutNow()">
+                    <i class="bi bi-box-arrow-right me-1"></i> Log Out Now
+                  </button>
+                  <button type="button" class="btn text-white btn-sm px-4 rounded-pill fw-semibold" style="background-color: #0F3D63;" (click)="autoLogoutService.stayLoggedIn()">
+                    <i class="bi bi-shield-check me-1"></i> Stay Logged In
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
       </div>
     </div>
   `,
@@ -235,10 +282,21 @@ import { AuthService } from '../../core/services/auth.service';
     }
   `]
 })
-export class AdminLayoutComponent {
+export class AdminLayoutComponent implements OnInit, OnDestroy {
   isSidebarCollapsed = signal(false);
 
-  constructor(public authService: AuthService) {}
+  constructor(
+    public authService: AuthService,
+    public autoLogoutService: AutoLogoutService
+  ) {}
+
+  ngOnInit(): void {
+    this.autoLogoutService.start();
+  }
+
+  ngOnDestroy(): void {
+    this.autoLogoutService.stop();
+  }
 
   toggleSidebar(): void {
     this.isSidebarCollapsed.set(!this.isSidebarCollapsed());

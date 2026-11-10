@@ -40,12 +40,16 @@ export class AuthService {
     );
   }
 
-  logout(): void {
+  logout(reason?: string): void {
     localStorage.removeItem('art_token');
     localStorage.removeItem('art_user');
     this.token.set(null);
     this.currentUser.set(null);
-    this.router.navigate(['/login']);
+    if (reason) {
+      this.router.navigate(['/login'], { queryParams: { reason } });
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 
   getProfile(): Observable<any> {

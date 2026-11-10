@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { AuthService } from '../../core/services/auth.service';
+import { AutoLogoutService } from '../../core/services/auto-logout.service';
 
 @Component({
   selector: 'app-settings',
@@ -161,6 +162,34 @@ import { AuthService } from '../../core/services/auth.service';
               <p class="text-muted small mb-2">{{ authService.currentUser()?.email }}</p>
               <span class="badge bg-primary text-uppercase">{{ authService.currentUser()?.role }}</span>
             </div>
+
+            <!-- Inactivity Auto-Logout Security Card -->
+            <div class="admin-card p-4 mt-4 text-start">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-clock-history fs-5 text-warning"></i>
+                <h6 class="fw-bold mb-0 text-dark">Inactivity Auto-Logout</h6>
+              </div>
+              <p class="text-muted small mb-3">
+                Automatically logs out the admin console when no mouse, keyboard, or touch input is detected.
+              </p>
+
+              <label class="form-label small fw-bold text-secondary">Idle Timeout Duration</label>
+              <select 
+                class="form-select form-select-sm" 
+                [ngModel]="autoLogoutService.idleTimeoutMinutes()" 
+                (ngModelChange)="onTimeoutChange($event)"
+              >
+                <option [value]="5">5 Minutes (High Security)</option>
+                <option [value]="10">10 Minutes (Recommended)</option>
+                <option [value]="15">15 Minutes (Default)</option>
+                <option [value]="30">30 Minutes</option>
+                <option [value]="60">60 Minutes (Extended)</option>
+              </select>
+              <div class="text-success small mt-2 d-flex align-items-center gap-1">
+                <i class="bi bi-shield-check"></i>
+                <span>Active: Auto-logout after {{ autoLogoutService.idleTimeoutMinutes() }}m with 60s countdown warning</span>
+              </div>
+            </div>
           </div>
         </div>
       }
@@ -229,7 +258,20 @@ export class SettingsComponent implements OnInit {
 
   activityLogs = signal<any[]>([]);
 
-  constructor(private apiService: ApiService, public authService: AuthService) {}
+  constructor(
+    private apiService: ApiService, 
+    public authService: AuthService,
+    public autoLogoutService: AutoLogoutService
+  ) {}
+
+  onTimeoutChange(minutes: any): void {
+    const num = Number(minutes);
+    if (!isNaN(num)) {
+      this.autoLogoutService.setTimeoutMinutes(num);
+      this.successMessage.set(`Session inactivity timeout updated to ${num} minutes.`);
+      setTimeout(() => this.successMessage.set(null), 4000);
+    }
+  }
 
   ngOnInit(): void {
     this.loadSettings();

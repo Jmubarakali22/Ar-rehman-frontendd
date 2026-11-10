@@ -1,7 +1,7 @@
 import { Component, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -148,6 +148,18 @@ import { AuthService } from '../../core/services/auth.service';
                   Enter your credentials to manage donations, causes, gallery and volunteers.
                 </p>
               </div>
+
+              <!-- Inactivity Auto-Logout Alert Banner -->
+              @if (inactivityNotice()) {
+                <div class="alert alert-warning-custom d-flex align-items-start gap-3 p-3 mb-4 rounded-3" role="alert">
+                  <i class="bi bi-clock-history fs-5 flex-shrink-0 text-warning mt-0.5"></i>
+                  <div class="flex-grow-1">
+                    <div class="fw-bold text-dark">Session Inactivity Timeout</div>
+                    <div class="small text-secondary mt-0.5">You were automatically logged out due to inactivity to protect administrative records. Please sign in again.</div>
+                  </div>
+                  <button type="button" class="btn-close btn-close-sm" (click)="inactivityNotice.set(false)" aria-label="Close"></button>
+                </div>
+              }
 
               <!-- Error Alert -->
               @if (errorMessage()) {
@@ -741,6 +753,10 @@ import { AuthService } from '../../core/services/auth.service';
       background-color: #fef2f2;
       border: 1px solid #fecaca;
     }
+    .alert-warning-custom {
+      background-color: #fffbeb;
+      border: 1px solid #fde68a;
+    }
 
     @keyframes shakeAnimation {
       0%, 100% { transform: translateX(0); }
@@ -1072,17 +1088,29 @@ export class LoginComponent implements OnInit {
   errorMessage = signal<string | null>(null);
   capsLockOn = signal(false);
   showHelpModal = signal(false);
+  inactivityNotice = signal(false);
 
   usernameFocused = false;
   passwordFocused = false;
 
-  constructor(private authService: AuthService, private router: Router) {
+  constructor(
+    private authService: AuthService, 
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/dashboard']);
     }
   }
 
   ngOnInit(): void {
+    // Check if redirected due to session inactivity
+    this.route.queryParams.subscribe(params => {
+      if (params['reason'] === 'inactivity') {
+        this.inactivityNotice.set(true);
+      }
+    });
+
     // Retrieve remembered username from previous logins
     const savedUser = localStorage.getItem('art_remembered_username');
     if (savedUser) {
