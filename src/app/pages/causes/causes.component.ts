@@ -86,25 +86,9 @@ import { Cause } from '../../core/models/models';
                 <div class="p-3 flex-grow-1 d-flex flex-column">
                   <div class="small fw-bold text-uppercase text-muted mb-1">{{ item.category }}</div>
                   <h5 class="fw-bold fs-6 mb-2 text-dark">{{ item.title }}</h5>
-                  <p class="small text-muted flex-grow-1 mb-3 text-truncate-3">
+                  <p class="small text-muted flex-grow-1 mb-3">
                     {{ item.description }}
                   </p>
-
-                  <!-- Progress Bar -->
-                  <div class="mb-3">
-                    <div class="d-flex justify-content-between small fw-bold mb-1">
-                      <span class="text-success">₹{{ item.raised_amount | number:'1.0-0' }}</span>
-                      <span class="text-muted">Target: ₹{{ item.target_amount | number:'1.0-0' }}</span>
-                    </div>
-                    <div class="progress" style="height: 8px;">
-                      <div 
-                        class="progress-bar bg-success" 
-                        role="progressbar" 
-                        [style.width.%]="getProgress(item)"
-                      ></div>
-                    </div>
-                    <div class="text-end small text-muted mt-1">{{ getProgress(item) | number:'1.0-0' }}% Funded</div>
-                  </div>
 
                   <!-- Actions -->
                   <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-auto">
