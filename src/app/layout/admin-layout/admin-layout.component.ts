@@ -97,17 +97,6 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
             <span *ngIf="!isSidebarCollapsed()">Admin Accounts</span>
           </a>
         </div>
-
-        <!-- Sidebar Footer Status -->
-        <div class="sidebar-footer px-3 py-2 mt-auto border-top border-secondary border-opacity-25 d-flex align-items-center" *ngIf="!isSidebarCollapsed()">
-          <div class="d-flex align-items-center gap-2 text-nowrap">
-            <span class="status-indicator online"></span>
-            <span class="small text-white-50" style="font-size: 12px;">Charity Reg. No. 04/16/2020</span>
-          </div>
-        </div>
-        <div class="sidebar-footer px-2 py-2 mt-auto border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-center" *ngIf="isSidebarCollapsed()" title="Charity Reg. No. 04/16/2020">
-          <span class="status-indicator online"></span>
-        </div>
       </aside>
 
       <!-- Main Layout Right Side -->
@@ -412,16 +401,6 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
       height: 64px;
       z-index: 1020;
       min-width: 0;
-    }
-    .sidebar-footer {
-      height: 48px;
-      min-height: 48px;
-      max-height: 48px;
-      display: flex;
-      align-items: center;
-      background: #081f33;
-      border-top: 1px solid rgba(255, 255, 255, 0.12);
-      flex-shrink: 0;
     }
     .admin-page-footer {
       height: 48px;
