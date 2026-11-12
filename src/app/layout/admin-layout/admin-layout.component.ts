@@ -112,7 +112,7 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
       </aside>
 
       <!-- Main Layout Right Side -->
-      <div class="admin-main flex-grow-1 d-flex flex-column min-vh-100">
+      <div class="admin-main flex-grow-1 d-flex flex-column">
         <!-- Top Navbar -->
         <header class="admin-topbar px-3 px-md-4 py-2 bg-white border-bottom d-flex align-items-center justify-content-between sticky-top">
           <div class="d-flex align-items-center gap-2 gap-md-3">
@@ -178,7 +178,7 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
         </main>
 
         <!-- Admin Page Footer (Aligned with Navigation Bar / Sidebar Footer) -->
-        <footer class="admin-page-footer px-3 px-md-4 py-2 bg-white border-top d-flex flex-wrap align-items-center justify-content-between mt-auto">
+        <footer class="admin-page-footer px-3 px-md-4 py-2 bg-white border-top d-flex flex-wrap align-items-center justify-content-between">
           <div class="d-flex align-items-center gap-2">
             <span class="status-indicator online"></span>
             <span class="small text-muted font-monospace" style="font-size: 11.5px;">
@@ -256,15 +256,22 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
       flex-direction: column;
       transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       flex-shrink: 0;
-      min-height: 100vh;
       z-index: 1040;
     }
-    /* Desktop Sidebar (>= 992px) */
+    /* Desktop Fixed-Viewport Dashboard (>= 992px) */
     @media (min-width: 992px) {
-      .admin-sidebar {
-        position: sticky;
-        top: 0;
+      .admin-wrapper {
         height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+      }
+      .admin-sidebar {
+        height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+      }
+      .sidebar-nav {
+        flex: 1 1 auto;
         overflow-y: auto;
         overflow-x: hidden;
       }
@@ -273,6 +280,16 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
       }
       .sidebar-backdrop {
         display: none !important;
+      }
+      .admin-main {
+        height: 100vh;
+        max-height: 100vh;
+        overflow: hidden;
+      }
+      .page-body {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        overflow-x: hidden;
       }
     }
     /* Tablet & Mobile Offcanvas (< 992px) */
@@ -400,6 +417,7 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
     .sidebar-footer {
       height: 48px;
       min-height: 48px;
+      max-height: 48px;
       display: flex;
       align-items: center;
       background: #081f33;
@@ -409,6 +427,7 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
     .admin-page-footer {
       height: 48px;
       min-height: 48px;
+      max-height: 48px;
       display: flex;
       align-items: center;
       background: #ffffff;
