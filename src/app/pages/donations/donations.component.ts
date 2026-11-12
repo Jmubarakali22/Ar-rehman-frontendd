@@ -53,8 +53,14 @@ import { Donation } from '../../core/models/models';
                 class="form-control" 
                 placeholder="Search by name, phone, UTR..." 
                 [(ngModel)]="searchQuery" 
-                (keyup.enter)="loadDonations()"
+                (input)="onSearchChange()"
+                (keyup.enter)="onSearchEnter()"
               >
+              @if (searchQuery) {
+                <button class="btn btn-outline-secondary" type="button" (click)="clearSearch()" title="Clear search">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              }
             </div>
           </div>
           <div class="col-6 col-md-3">
@@ -106,6 +112,7 @@ import { Donation } from '../../core/models/models';
                 type="date" 
                 class="form-control form-control-sm font-monospace" 
                 [(ngModel)]="startDate" 
+                (input)="onCustomDateChange()" 
                 (change)="onCustomDateChange()" 
                 title="Start Date"
               >
@@ -120,6 +127,7 @@ import { Donation } from '../../core/models/models';
                 type="date" 
                 class="form-control form-control-sm font-monospace" 
                 [(ngModel)]="endDate" 
+                (input)="onCustomDateChange()" 
                 (change)="onCustomDateChange()" 
                 title="End Date"
               >
@@ -1188,7 +1196,35 @@ Jazakallahu Khairan for your continuous benevolence and trust.
     });
   }
 
+  private searchDebounceTimer: any = null;
+  private dateDebounceTimer: any = null;
+
+  onSearchChange(): void {
+    this.currentPage = 1;
+    if (this.searchDebounceTimer) {
+      clearTimeout(this.searchDebounceTimer);
+    }
+    this.searchDebounceTimer = setTimeout(() => {
+      this.loadDonations();
+    }, 250);
+  }
+
+  onSearchEnter(): void {
+    if (this.searchDebounceTimer) {
+      clearTimeout(this.searchDebounceTimer);
+    }
+    this.currentPage = 1;
+    this.loadDonations();
+  }
+
+  clearSearch(): void {
+    this.searchQuery = '';
+    this.onSearchEnter();
+  }
+
   resetFilters(): void {
+    if (this.searchDebounceTimer) clearTimeout(this.searchDebounceTimer);
+    if (this.dateDebounceTimer) clearTimeout(this.dateDebounceTimer);
     this.searchQuery = '';
     this.selectedType = '';
     this.selectedStatus = '';
@@ -1260,10 +1296,18 @@ Jazakallahu Khairan for your continuous benevolence and trust.
   onCustomDateChange(): void {
     this.datePreset = 'custom';
     this.currentPage = 1;
-    this.loadDonations();
+    if (this.dateDebounceTimer) {
+      clearTimeout(this.dateDebounceTimer);
+    }
+    this.dateDebounceTimer = setTimeout(() => {
+      this.loadDonations();
+    }, 200);
   }
 
   clearDateFilter(): void {
+    if (this.dateDebounceTimer) {
+      clearTimeout(this.dateDebounceTimer);
+    }
     this.datePreset = '';
     this.startDate = '';
     this.endDate = '';
