@@ -43,6 +43,7 @@ import { Donation } from '../../core/models/models';
 
       <!-- Filters & Search Toolbar -->
       <div class="admin-card p-3 mb-4">
+        <!-- Row 1: Search, Type, Status, Reset -->
         <div class="row g-2 align-items-center">
           <div class="col-12 col-md-4">
             <div class="input-group">
@@ -77,6 +78,69 @@ import { Donation } from '../../core/models/models';
             <button class="btn btn-trust-outline" (click)="resetFilters()">
               <i class="bi bi-x-circle me-1"></i> Reset
             </button>
+          </div>
+        </div>
+
+        <!-- Row 2: Datewise Filtration -->
+        <div class="row g-2 align-items-center mt-2 pt-2 border-top">
+          <!-- Quick Presets -->
+          <div class="col-12 col-sm-6 col-lg-3">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-white"><i class="bi bi-calendar-event text-primary"></i></span>
+              <select class="form-select form-select-sm" [(ngModel)]="datePreset" (change)="onDatePresetChange()">
+                <option value="">All Dates (Any Time)</option>
+                <option value="today">Today</option>
+                <option value="yesterday">Yesterday</option>
+                <option value="this_week">Last 7 Days</option>
+                <option value="this_month">This Month</option>
+                <option value="last_month">Last Month</option>
+                <option value="custom">Custom Date Range...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- From Date -->
+          <div class="col-6 col-sm-3 col-lg-3">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-light text-muted" style="font-size: 11px;">From</span>
+              <input 
+                type="date" 
+                class="form-control form-control-sm font-monospace" 
+                [(ngModel)]="startDate" 
+                (change)="onCustomDateChange()" 
+                title="Start Date"
+              >
+            </div>
+          </div>
+
+          <!-- To Date -->
+          <div class="col-6 col-sm-3 col-lg-3">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-light text-muted" style="font-size: 11px;">To</span>
+              <input 
+                type="date" 
+                class="form-control form-control-sm font-monospace" 
+                [(ngModel)]="endDate" 
+                (change)="onCustomDateChange()" 
+                title="End Date"
+              >
+            </div>
+          </div>
+
+          <!-- Active Filter Badge / Quick Clear -->
+          <div class="col-12 col-lg-3 d-flex align-items-center justify-content-between justify-content-lg-end gap-2">
+            @if (startDate || endDate || datePreset) {
+              <span class="badge bg-primary-subtle text-primary border font-monospace" style="font-size: 11px;">
+                <i class="bi bi-funnel-fill me-1"></i>Date active
+              </span>
+              <button class="btn btn-sm btn-link text-danger text-decoration-none p-0" (click)="clearDateFilter()" style="font-size: 11.5px;">
+                <i class="bi bi-x-circle me-1"></i>Clear Date
+              </button>
+            } @else {
+              <span class="small text-muted font-monospace" style="font-size: 11px;">
+                <i class="bi bi-calendar3 me-1"></i>Showing all dates
+              </span>
+            }
           </div>
         </div>
       </div>
@@ -938,6 +1002,9 @@ export class DonationsComponent implements OnInit {
   searchQuery = '';
   selectedType = '';
   selectedStatus = '';
+  datePreset = '';
+  startDate = '';
+  endDate = '';
 
   showFormModal = signal(false);
   isEditing = signal(false);
@@ -1107,7 +1174,9 @@ Jazakallahu Khairan for your continuous benevolence and trust.
       limit: 10,
       search: this.searchQuery,
       type: this.selectedType,
-      status: this.selectedStatus
+      status: this.selectedStatus,
+      startDate: this.startDate,
+      endDate: this.endDate
     }).subscribe({
       next: (res) => {
         if (res.success) {
@@ -1125,6 +1194,81 @@ Jazakallahu Khairan for your continuous benevolence and trust.
     this.searchQuery = '';
     this.selectedType = '';
     this.selectedStatus = '';
+    this.datePreset = '';
+    this.startDate = '';
+    this.endDate = '';
+    this.currentPage = 1;
+    this.loadDonations();
+  }
+
+  formatDateYMD(d: Date): string {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  onDatePresetChange(): void {
+    const now = new Date();
+    this.currentPage = 1;
+
+    switch (this.datePreset) {
+      case 'today': {
+        const todayStr = this.formatDateYMD(now);
+        this.startDate = todayStr;
+        this.endDate = todayStr;
+        break;
+      }
+      case 'yesterday': {
+        const yesterday = new Date(now);
+        yesterday.setDate(now.getDate() - 1);
+        const yStr = this.formatDateYMD(yesterday);
+        this.startDate = yStr;
+        this.endDate = yStr;
+        break;
+      }
+      case 'this_week': {
+        const weekAgo = new Date(now);
+        weekAgo.setDate(now.getDate() - 6);
+        this.startDate = this.formatDateYMD(weekAgo);
+        this.endDate = this.formatDateYMD(now);
+        break;
+      }
+      case 'this_month': {
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+        this.startDate = this.formatDateYMD(firstDay);
+        this.endDate = this.formatDateYMD(now);
+        break;
+      }
+      case 'last_month': {
+        const firstDayLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const lastDayLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+        this.startDate = this.formatDateYMD(firstDayLastMonth);
+        this.endDate = this.formatDateYMD(lastDayLastMonth);
+        break;
+      }
+      case 'custom':
+        // Wait for user to select from/to dates
+        break;
+      default:
+        // All dates
+        this.startDate = '';
+        this.endDate = '';
+        break;
+    }
+    this.loadDonations();
+  }
+
+  onCustomDateChange(): void {
+    this.datePreset = 'custom';
+    this.currentPage = 1;
+    this.loadDonations();
+  }
+
+  clearDateFilter(): void {
+    this.datePreset = '';
+    this.startDate = '';
+    this.endDate = '';
     this.currentPage = 1;
     this.loadDonations();
   }
