@@ -251,7 +251,7 @@ import { Cause } from '../../core/models/models';
                   <button type="submit" class="btn btn-trust-primary" [disabled]="isSubmitting()">
                     @if (isSubmitting()) {
                       <span class="spinner-border spinner-border-sm me-1" role="status"></span>
-                      <span>{{ uploadingStatus || 'Saving...' }}</span>
+                      <span>Saving...</span>
                     } @else {
                       <span>Save Cause</span>
                     }
@@ -286,7 +286,6 @@ import { Cause } from '../../core/models/models';
 export class CausesComponent implements OnInit {
   isLoading = signal(true);
   isSubmitting = signal(false);
-  uploadingStatus = '';
   causes = signal<Cause[]>([]);
   filteredCauses = signal<Cause[]>([]);
 
@@ -396,58 +395,7 @@ export class CausesComponent implements OnInit {
     this.showModal.set(true);
   }
 
-  private async uploadToImageKit(file: File, folder: string = '/assets/causes'): Promise<string> {
-    const publicKey = 'public_IgReEEKPDIGSDKorGWD4rhDAy7Y=';
-    const privateKey = 'private_rUmwJc3xZw75UR1m/uRLZvvEs0E=';
-    const token = 'cause_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
-    const expire = Math.floor(Date.now() / 1000) + 1800;
-
-    // Generate HMAC-SHA1 signature using standard Web Crypto API supported by all modern browsers
-    const enc = new TextEncoder();
-    const key = await window.crypto.subtle.importKey(
-      'raw',
-      enc.encode(privateKey),
-      { name: 'HMAC', hash: 'SHA-1' },
-      false,
-      ['sign']
-    );
-    const sigBuf = await window.crypto.subtle.sign(
-      'HMAC',
-      key,
-      enc.encode(token + expire)
-    );
-    const signature = Array.from(new Uint8Array(sigBuf))
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('');
-
-    const ikFormData = new FormData();
-    ikFormData.append('file', file);
-    ikFormData.append('fileName', file.name);
-    ikFormData.append('publicKey', publicKey);
-    ikFormData.append('signature', signature);
-    ikFormData.append('expire', expire.toString());
-    ikFormData.append('token', token);
-    ikFormData.append('folder', folder);
-    ikFormData.append('useUniqueFileName', 'false');
-
-    const res = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
-      method: 'POST',
-      body: ikFormData
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'ImageKit upload failed with HTTP status ' + res.status);
-    }
-
-    const data = await res.json();
-    if (!data.url) {
-      throw new Error('ImageKit upload did not return a valid URL.');
-    }
-    return data.url;
-  }
-
-  async saveCause(): Promise<void> {
+  saveCause(): void {
     if (!this.formData.title || !this.formData.category || !this.formData.description) {
       alert('Please fill in Title, Category, and Description.');
       return;
@@ -455,60 +403,44 @@ export class CausesComponent implements OnInit {
 
     this.isSubmitting.set(true);
 
-    try {
-      let finalImageUrl = this.formData.image_url || 'https://ik.imagekit.io/baaidzoik/assets/causes/food_dist.png';
+    const fd = new FormData();
+    fd.append('title', this.formData.title);
+    fd.append('category', this.formData.category);
+    fd.append('description', this.formData.description);
+    fd.append('status', this.formData.status || 'active');
+    fd.append('featured', this.formData.featured ? '1' : '0');
+    fd.append('folder', '/assets/causes');
 
-      // 1. If user selected a local file, upload directly to ImageKit (/assets/causes/)
-      if (this.imageSourceMode === 'upload' && this.selectedFile) {
-        this.uploadingStatus = 'Uploading photo to ImageKit (/assets/causes)...';
-        finalImageUrl = await this.uploadToImageKit(this.selectedFile, '/assets/causes');
-      }
+    if (this.imageSourceMode === 'upload' && this.selectedFile) {
+      fd.append('image', this.selectedFile);
+    } else if (this.formData.image_url) {
+      fd.append('image_url', this.formData.image_url);
+    }
 
-      this.uploadingStatus = 'Saving cause details...';
-
-      // 2. Prepare payload for API with the ImageKit URL
-      const payload: any = {
-        title: this.formData.title,
-        category: this.formData.category,
-        description: this.formData.description,
-        status: this.formData.status || 'active',
-        featured: this.formData.featured ? 1 : 0,
-        image_url: finalImageUrl
-      };
-
-      if (this.isEditing()) {
-        this.apiService.updateCause(this.formData.id, payload).subscribe({
-          next: () => {
-            this.isSubmitting.set(false);
-            this.uploadingStatus = '';
-            this.showModal.set(false);
-            this.loadCauses();
-          },
-          error: (err) => {
-            this.isSubmitting.set(false);
-            this.uploadingStatus = '';
-            alert('Failed to update cause: ' + (err.error?.message || err.message));
-          }
-        });
-      } else {
-        this.apiService.createCause(payload).subscribe({
-          next: () => {
-            this.isSubmitting.set(false);
-            this.uploadingStatus = '';
-            this.showModal.set(false);
-            this.loadCauses();
-          },
-          error: (err) => {
-            this.isSubmitting.set(false);
-            this.uploadingStatus = '';
-            alert('Failed to create cause: ' + (err.error?.message || err.message));
-          }
-        });
-      }
-    } catch (err: any) {
-      this.isSubmitting.set(false);
-      this.uploadingStatus = '';
-      alert('ImageKit upload error: ' + (err.message || err));
+    if (this.isEditing()) {
+      this.apiService.updateCause(this.formData.id, fd).subscribe({
+        next: () => {
+          this.isSubmitting.set(false);
+          this.showModal.set(false);
+          this.loadCauses();
+        },
+        error: (err) => {
+          this.isSubmitting.set(false);
+          alert('Failed to update cause: ' + (err.error?.message || err.message));
+        }
+      });
+    } else {
+      this.apiService.createCause(fd).subscribe({
+        next: () => {
+          this.isSubmitting.set(false);
+          this.showModal.set(false);
+          this.loadCauses();
+        },
+        error: (err) => {
+          this.isSubmitting.set(false);
+          alert('Failed to create cause: ' + (err.error?.message || err.message));
+        }
+      });
     }
   }
 
