@@ -11,7 +11,7 @@ import { DashboardStats, Donation } from '../../core/models/models';
   template: `
     <div class="dashboard-page">
       <!-- Welcome Banner -->
-      <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+      <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-4 gap-3">
         <div>
           <h2 class="h4 fw-bold mb-1" style="color: #0F3D63;">
             Ar Rahman Trust Overview
@@ -20,7 +20,7 @@ import { DashboardStats, Donation } from '../../core/models/models';
             Charity Operations &bull; Pernambut & Surrounding Rural Villages (Reg: 04/16/2020)
           </p>
         </div>
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
           <button class="btn btn-outline-secondary btn-sm" (click)="loadDashboard()">
             <i class="bi bi-arrow-clockwise me-1"></i> Refresh
           </button>
@@ -155,7 +155,7 @@ import { DashboardStats, Donation } from '../../core/models/models';
                 <a routerLink="/donations" class="btn btn-sm btn-link text-decoration-none">View All</a>
               </div>
               <div class="table-responsive">
-                <table class="table admin-table mb-0">
+                <table class="table admin-table mb-0" style="min-width: 580px;">
                   <thead>
                     <tr>
                       <th>Donor</th>

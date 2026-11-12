@@ -14,13 +14,16 @@
   --sidebar-width: 260px;
 }
 
-body {
+html, body {
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   background-color: var(--bg-page);
   color: var(--text-main);
   margin: 0;
   padding: 0;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -54,6 +57,8 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid var(--border-color);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 4px 12px rgba(15, 61, 99, 0.03);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .admin-card:hover {
@@ -209,32 +214,81 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Table Enhancements */
+.table-responsive {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 7px;
+}
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
 .admin-table {
   width: 100%;
   margin-bottom: 0;
 }
 
 .admin-table th {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   color: #64748b;
   font-weight: 700;
-  padding: 0.85rem 1rem;
+  padding: 0.55rem 0.5rem;
   background-color: #f8fafc;
   border-top: none;
   border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
 }
 
 .admin-table td {
-  padding: 0.9rem 1rem;
+  padding: 0.52rem 0.5rem;
   vertical-align: middle;
   border-bottom: 1px solid #f1f5f9;
-  font-size: 0.875rem;
+  font-size: 0.83rem;
 }
 
 .admin-table tbody tr:hover {
   background-color: #f8fafc;
+}
+
+/* Compact Table Action Button Group */
+.action-btn-group {
+  display: inline-flex !important;
+  flex-wrap: nowrap !important;
+  gap: 1.5px !important;
+}
+
+.action-btn-group .btn {
+  padding: 0 !important;
+  width: 25px !important;
+  height: 25px !important;
+  min-width: 25px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 0.78rem !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  flex-shrink: 0 !important;
+}
+
+.action-btn-group .btn i {
+  font-size: 0.8rem !important;
+  line-height: 1 !important;
 }
 
 /* Form Controls */
@@ -311,6 +365,17 @@ h1, h2, h3, h4, h5, h6 {
 
   .modal-footer {
     padding: 0.5rem !important;
+  }
+}
+
+/* General Modal Mobile Optimizations */
+@media (max-width: 576px) {
+  .modal-dialog:not(.receipt-modal-dialog) {
+    margin: 0.5rem auto !important;
+    max-width: calc(100% - 1rem) !important;
+  }
+  .modal-dialog:not(.receipt-modal-dialog) .modal-content {
+    border-radius: 12px !important;
   }
 }
 

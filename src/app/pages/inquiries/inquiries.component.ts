@@ -11,7 +11,7 @@ import { ContactInquiry } from '../../core/models/models';
   template: `
     <div class="inquiries-page">
       <!-- Header -->
-      <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+      <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-4 gap-3">
         <div>
           <h2 class="h4 fw-bold mb-1" style="color: #0F3D63;">Contact Inquiries & Feedback</h2>
           <p class="text-muted small mb-0">Messages and requests submitted through the official website contact portal.</p>

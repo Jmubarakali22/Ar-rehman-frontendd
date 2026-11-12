@@ -9,20 +9,39 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
   template: `
-    <div class="admin-wrapper d-flex min-vh-100">
+    <div class="admin-wrapper min-vh-100">
+      <!-- Mobile Sidebar Backdrop Overlay -->
+      <div 
+        class="sidebar-backdrop" 
+        *ngIf="isMobileSidebarOpen()" 
+        (click)="closeMobileSidebar()"
+      ></div>
+
       <!-- Sidebar -->
-      <aside class="admin-sidebar" [class.collapsed]="isSidebarCollapsed()">
+      <aside class="admin-sidebar" [class.collapsed]="isSidebarCollapsed()" [class.mobile-open]="isMobileSidebarOpen()">
         <!-- Brand Header -->
-        <div class="sidebar-brand d-flex align-items-center gap-3 p-3">
-          <img 
-            src="https://ik.imagekit.io/baaidzoik/assets/header-logo/ar_logo_1.png" 
-            alt="Ar Rahman Trust" 
-            class="brand-logo"
-          >
-          <div class="brand-text" *ngIf="!isSidebarCollapsed()">
-            <div class="fw-bold brand-title">Ar Rahman</div>
-            <div class="brand-subtitle">Charity Admin</div>
+        <div class="sidebar-brand d-flex align-items-center justify-content-between p-3">
+          <div class="d-flex align-items-center gap-3">
+            <img 
+              src="https://ik.imagekit.io/baaidzoik/assets/header-logo/ar_logo_1.png" 
+              alt="Ar Rahman Trust" 
+              class="brand-logo"
+            >
+            <div class="brand-text" *ngIf="!isSidebarCollapsed()">
+              <div class="fw-bold brand-title">Ar Rahman</div>
+              <div class="brand-subtitle">Charity Admin</div>
+            </div>
           </div>
+          <!-- Close button on mobile -->
+          <button 
+            type="button" 
+            class="btn btn-sm text-white-50 p-1 d-lg-none" 
+            (click)="closeMobileSidebar()" 
+            title="Close navigation menu"
+            aria-label="Close navigation"
+          >
+            <i class="bi bi-x-lg fs-5"></i>
+          </button>
         </div>
 
         <!-- Navigation Menu -->
@@ -31,22 +50,22 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
             CORE MANAGEMENT
           </div>
 
-          <a routerLink="/dashboard" routerLinkActive="active" class="nav-item-link">
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-item-link" (click)="closeMobileSidebar()">
             <i class="bi bi-speedometer2"></i>
             <span *ngIf="!isSidebarCollapsed()">Dashboard</span>
           </a>
 
-          <a routerLink="/donations" routerLinkActive="active" class="nav-item-link">
+          <a routerLink="/donations" routerLinkActive="active" class="nav-item-link" (click)="closeMobileSidebar()">
             <i class="bi bi-cash-coin"></i>
             <span *ngIf="!isSidebarCollapsed()">Donations</span>
           </a>
 
-          <a routerLink="/causes" routerLinkActive="active" class="nav-item-link">
+          <a routerLink="/causes" routerLinkActive="active" class="nav-item-link" (click)="closeMobileSidebar()">
             <i class="bi bi-heart-pulse-fill"></i>
             <span *ngIf="!isSidebarCollapsed()">Causes / Programs</span>
           </a>
 
-          <a routerLink="/gallery" routerLinkActive="active" class="nav-item-link">
+          <a routerLink="/gallery" routerLinkActive="active" class="nav-item-link" (click)="closeMobileSidebar()">
             <i class="bi bi-images"></i>
             <span *ngIf="!isSidebarCollapsed()">Gallery Photos</span>
           </a>
@@ -55,12 +74,12 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
             COMMUNITY & ENGAGEMENT
           </div>
 
-          <a routerLink="/volunteers" routerLinkActive="active" class="nav-item-link">
+          <a routerLink="/volunteers" routerLinkActive="active" class="nav-item-link" (click)="closeMobileSidebar()">
             <i class="bi bi-people-fill"></i>
             <span *ngIf="!isSidebarCollapsed()">Volunteers</span>
           </a>
 
-          <a routerLink="/inquiries" routerLinkActive="active" class="nav-item-link">
+          <a routerLink="/inquiries" routerLinkActive="active" class="nav-item-link" (click)="closeMobileSidebar()">
             <i class="bi bi-envelope-paper-fill"></i>
             <span *ngIf="!isSidebarCollapsed()">Contact Inquiries</span>
           </a>
@@ -69,12 +88,12 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
             CONFIGURATION
           </div>
 
-          <a routerLink="/settings" routerLinkActive="active" class="nav-item-link">
+          <a routerLink="/settings" routerLinkActive="active" class="nav-item-link" (click)="closeMobileSidebar()">
             <i class="bi bi-gear-fill"></i>
             <span *ngIf="!isSidebarCollapsed()">Trust Settings</span>
           </a>
 
-          <a routerLink="/admins" routerLinkActive="active" class="nav-item-link" *ngIf="authService.isSuperAdmin()">
+          <a routerLink="/admins" routerLinkActive="active" class="nav-item-link" *ngIf="authService.isSuperAdmin()" (click)="closeMobileSidebar()">
             <i class="bi bi-shield-lock-fill"></i>
             <span *ngIf="!isSidebarCollapsed()">Admin Accounts</span>
           </a>
@@ -92,10 +111,13 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
       <!-- Main Layout Right Side -->
       <div class="admin-main flex-grow-1 d-flex flex-column">
         <!-- Top Navbar -->
-        <header class="admin-topbar px-4 py-2 bg-white border-bottom d-flex align-items-center justify-content-between sticky-top">
-          <div class="d-flex align-items-center gap-3">
-            <button class="btn btn-light btn-sm toggle-btn border" (click)="toggleSidebar()">
-              <i class="bi" [class.bi-list]="!isSidebarCollapsed()" [class.bi-arrow-right]="isSidebarCollapsed()"></i>
+        <header class="admin-topbar px-3 px-md-4 py-2 bg-white border-bottom d-flex align-items-center justify-content-between sticky-top">
+          <div class="d-flex align-items-center gap-2 gap-md-3">
+            <button class="btn btn-light btn-sm toggle-btn border" (click)="toggleSidebar()" aria-label="Toggle navigation">
+              <i class="bi" 
+                [class.bi-list]="!isSidebarCollapsed() && !isMobileSidebarOpen()" 
+                [class.bi-arrow-right]="isSidebarCollapsed() && !isMobileSidebarOpen()"
+                [class.bi-x-lg]="isMobileSidebarOpen()"></i>
             </button>
 
             <span class="d-none d-md-inline-block fw-semibold text-secondary small">
@@ -103,19 +125,25 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
             </span>
           </div>
 
-          <div class="d-flex align-items-center gap-3">
+          <div class="d-flex align-items-center gap-2 gap-sm-3">
             <!-- View Live Website Link -->
             <a 
               href="https://arrahmantrust.netlify.app/" 
               target="_blank" 
-              class="btn btn-outline-success btn-sm rounded-pill px-3 d-flex align-items-center gap-2 fw-semibold"
+              class="btn btn-outline-success btn-sm rounded-pill px-2 px-sm-3 d-flex align-items-center gap-1 gap-sm-2 fw-semibold"
+              title="Open public website in new tab"
             >
               <i class="bi bi-globe"></i>
               <span class="d-none d-sm-inline">Live Website</span>
             </a>
 
             <!-- Quick Add Donation Button -->
-            <a routerLink="/donations" class="btn btn-sm text-white rounded-pill px-3 d-flex align-items-center gap-2 fw-semibold" style="background-color: #0F3D63;">
+            <a 
+              routerLink="/donations" 
+              class="btn btn-sm text-white rounded-pill px-2 px-sm-3 d-flex align-items-center gap-1 gap-sm-2 fw-semibold" 
+              style="background-color: #0F3D63;"
+              title="Record New Donation"
+            >
               <i class="bi bi-plus-circle"></i>
               <span class="d-none d-sm-inline">Add Donation</span>
             </a>
@@ -142,7 +170,7 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
         </header>
 
         <!-- Page Body Content -->
-        <main class="page-body p-3 p-md-4 flex-grow-1">
+        <main class="page-body p-2 p-md-3 p-xl-3 flex-grow-1">
           <router-outlet></router-outlet>
         </main>
 
@@ -195,18 +223,89 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
     </div>
   `,
   styles: [`
+    .admin-wrapper {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+      position: relative;
+    }
     .admin-sidebar {
-      width: 250px;
+      width: 235px;
       background: #0a2740;
       color: #e2e8f0;
       display: flex;
       flex-direction: column;
-      transition: width 0.2s ease;
+      transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       flex-shrink: 0;
       min-height: 100vh;
+      z-index: 1040;
     }
-    .admin-sidebar.collapsed {
-      width: 72px;
+    /* Desktop Sidebar (>= 992px) */
+    @media (min-width: 992px) {
+      .admin-sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+      .admin-sidebar.collapsed {
+        width: 72px;
+      }
+      .sidebar-backdrop {
+        display: none !important;
+      }
+    }
+    /* Tablet & Mobile Offcanvas (< 992px) */
+    @media (max-width: 991.98px) {
+      .admin-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        height: 100vh;
+        width: 260px;
+        max-width: 85vw;
+        transform: translateX(-100%);
+        overflow-y: auto;
+        overflow-x: hidden;
+        z-index: 1050;
+        box-shadow: none;
+      }
+      .admin-sidebar.mobile-open {
+        transform: translateX(0);
+        box-shadow: 4px 0 30px rgba(0, 0, 0, 0.45);
+      }
+    }
+    .sidebar-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 39, 64, 0.65);
+      backdrop-filter: blur(2px);
+      z-index: 1045;
+      animation: sidebarBackdropFade 0.2s ease-in-out;
+    }
+    @keyframes sidebarBackdropFade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .admin-main {
+      flex: 1 1 0%;
+      min-width: 0; /* CRITICAL: Enables children tables to trigger scrollbar rather than stretching layout */
+      width: 100%;
+      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background: var(--bg-page, #f4f6f9);
+    }
+    .page-body {
+      flex: 1 1 auto;
+      min-width: 0;
+      width: 100%;
+      max-width: 100%;
     }
     .brand-logo {
       height: 42px;
@@ -278,12 +377,14 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
     }
     .admin-topbar {
       height: 64px;
-      z-index: 100;
+      z-index: 1020;
+      min-width: 0;
     }
   `]
 })
 export class AdminLayoutComponent implements OnInit, OnDestroy {
   isSidebarCollapsed = signal(false);
+  isMobileSidebarOpen = signal(false);
 
   constructor(
     public authService: AuthService,
@@ -299,6 +400,16 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
   }
 
   toggleSidebar(): void {
-    this.isSidebarCollapsed.set(!this.isSidebarCollapsed());
+    if (typeof window !== 'undefined' && window.innerWidth < 992) {
+      this.isMobileSidebarOpen.set(!this.isMobileSidebarOpen());
+    } else {
+      this.isSidebarCollapsed.set(!this.isSidebarCollapsed());
+    }
+  }
+
+  closeMobileSidebar(): void {
+    if (this.isMobileSidebarOpen()) {
+      this.isMobileSidebarOpen.set(false);
+    }
   }
 }

@@ -11,12 +11,12 @@ import { Admin } from '../../core/models/models';
   template: `
     <div class="admins-page">
       <!-- Header -->
-      <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+      <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-4 gap-3">
         <div>
           <h2 class="h4 fw-bold mb-1" style="color: #0F3D63;">Admin Accounts & Access Control</h2>
           <p class="text-muted small mb-0">Manage authorized charity staff and trustee administrative logins.</p>
         </div>
-        <div>
+        <div class="flex-shrink-0">
           <button class="btn btn-trust-primary btn-sm" (click)="openAddModal()">
             <i class="bi bi-shield-plus me-1"></i> Add Admin
           </button>
@@ -24,17 +24,17 @@ import { Admin } from '../../core/models/models';
       </div>
 
       <!-- Admins Table Card -->
-      <div class="admin-card">
+      <div class="admin-card mb-4">
         <div class="table-responsive">
-          <table class="table admin-table mb-0 align-middle">
+          <table class="table admin-table mb-0 align-middle" style="min-width: 680px;">
             <thead>
               <tr>
-                <th>User / Name</th>
-                <th>Username</th>
-                <th>Email Address</th>
-                <th>Role</th>
-                <th>Joined</th>
-                <th class="text-end">Actions</th>
+                <th style="min-width: 140px;">User / Name</th>
+                <th style="min-width: 110px;">Username</th>
+                <th style="min-width: 150px;">Email Address</th>
+                <th style="min-width: 95px;">Role</th>
+                <th style="min-width: 100px;">Joined</th>
+                <th class="text-end" style="min-width: 90px; white-space: nowrap;">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -67,7 +67,7 @@ import { Admin } from '../../core/models/models';
                       </span>
                     </td>
                     <td class="small text-muted">{{ a.created_at | date:'mediumDate' }}</td>
-                    <td class="text-end">
+                    <td class="text-end" style="min-width: 90px; white-space: nowrap;">
                       @if (a.id !== authService.currentUser()?.id) {
                         <button class="btn btn-sm btn-outline-danger" (click)="deleteAdmin(a.id)">
                           <i class="bi bi-trash"></i>

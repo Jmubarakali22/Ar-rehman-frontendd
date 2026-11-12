@@ -198,7 +198,7 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
       @if (activeTab === 'logs') {
         <div class="admin-card">
           <div class="table-responsive">
-            <table class="table admin-table mb-0 align-middle">
+            <table class="table admin-table mb-0 align-middle" style="min-width: 650px;">
               <thead>
                 <tr>
                   <th>Timestamp</th>

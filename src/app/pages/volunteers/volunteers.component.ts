@@ -11,12 +11,12 @@ import { Volunteer } from '../../core/models/models';
   template: `
     <div class="volunteers-page">
       <!-- Header -->
-      <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+      <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-4 gap-3">
         <div>
           <h2 class="h4 fw-bold mb-1" style="color: #0F3D63;">Volunteers & Community Members</h2>
           <p class="text-muted small mb-0">Review sign-ups, approve active members, and coordinate field workers.</p>
         </div>
-        <div>
+        <div class="flex-shrink-0">
           <button class="btn btn-trust-primary btn-sm" (click)="openAddModal()">
             <i class="bi bi-person-plus me-1"></i> Register Volunteer
           </button>
@@ -25,8 +25,8 @@ import { Volunteer } from '../../core/models/models';
 
       <!-- Filters -->
       <div class="admin-card p-3 mb-4">
-        <div class="row g-2">
-          <div class="col-md-6">
+        <div class="row g-2 align-items-center">
+          <div class="col-12 col-md-6">
             <div class="input-group">
               <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
               <input 
@@ -38,7 +38,7 @@ import { Volunteer } from '../../core/models/models';
               >
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-8 col-md-4">
             <select class="form-select" [(ngModel)]="statusFilter" (change)="filterVolunteers()">
               <option value="">All Statuses</option>
               <option value="approved">Approved Active Volunteers</option>
@@ -46,25 +46,25 @@ import { Volunteer } from '../../core/models/models';
               <option value="rejected">Rejected</option>
             </select>
           </div>
-          <div class="col-md-2 d-grid">
+          <div class="col-4 col-md-2 d-grid">
             <button class="btn btn-trust-outline" (click)="resetFilters()">Reset</button>
           </div>
         </div>
       </div>
 
       <!-- Volunteers Table -->
-      <div class="admin-card">
+      <div class="admin-card mb-4">
         <div class="table-responsive">
-          <table class="table admin-table mb-0 align-middle">
+          <table class="table admin-table mb-0 align-middle" style="min-width: 820px;">
             <thead>
               <tr>
-                <th>Volunteer Name</th>
-                <th>Phone & Contact</th>
-                <th>Address / Location</th>
-                <th>Occupation / Skills</th>
-                <th>Availability</th>
-                <th>Status</th>
-                <th class="text-end">Actions</th>
+                <th style="min-width: 140px;">Volunteer Name</th>
+                <th style="min-width: 130px;">Phone & Contact</th>
+                <th style="min-width: 150px;">Address / Location</th>
+                <th style="min-width: 140px;">Occupation / Skills</th>
+                <th style="min-width: 110px;">Availability</th>
+                <th style="min-width: 100px;">Status</th>
+                <th class="text-end" style="min-width: 130px; white-space: nowrap;">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -107,7 +107,7 @@ import { Volunteer } from '../../core/models/models';
                         {{ v.status | uppercase }}
                       </span>
                     </td>
-                    <td class="text-end">
+                    <td class="text-end" style="min-width: 130px; white-space: nowrap;">
                       <div class="btn-group btn-group-sm">
                         @if (v.status !== 'approved') {
                           <button class="btn btn-outline-success" title="Approve Volunteer" (click)="updateStatus(v.id, 'approved')">

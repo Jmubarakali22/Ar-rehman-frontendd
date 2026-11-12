@@ -12,12 +12,12 @@ import { Donation } from '../../core/models/models';
   template: `
     <div class="donations-page">
       <!-- Page Header -->
-      <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+      <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-3 gap-2">
         <div>
-          <h2 class="h4 fw-bold mb-1" style="color: #0F3D63;">Donations Management</h2>
-          <p class="text-muted small mb-0">Record, verify, and generate official receipts for Zakat and Sadaqah donors.</p>
+          <h2 class="h5 fw-bold mb-1" style="color: #0F3D63;">Donations Management</h2>
+          <p class="text-muted small mb-0" style="font-size: 12px;">Record, verify, and generate official receipts for Zakat and Sadaqah donors.</p>
         </div>
-        <div class="d-flex align-items-center gap-2">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
           <button class="btn btn-outline-secondary btn-sm" (click)="exportToCSV()">
             <i class="bi bi-download me-1"></i> Export CSV
           </button>
@@ -43,8 +43,8 @@ import { Donation } from '../../core/models/models';
 
       <!-- Filters & Search Toolbar -->
       <div class="admin-card p-3 mb-4">
-        <div class="row g-2">
-          <div class="col-md-4">
+        <div class="row g-2 align-items-center">
+          <div class="col-12 col-md-4">
             <div class="input-group">
               <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
               <input 
@@ -56,7 +56,7 @@ import { Donation } from '../../core/models/models';
               >
             </div>
           </div>
-          <div class="col-sm-6 col-md-3">
+          <div class="col-6 col-md-3">
             <select class="form-select" [(ngModel)]="selectedType" (change)="loadDonations()">
               <option value="">All Donation Types</option>
               <option value="zakat">Zakat</option>
@@ -67,7 +67,7 @@ import { Donation } from '../../core/models/models';
               <option value="general">General Aid</option>
             </select>
           </div>
-          <div class="col-sm-6 col-md-3">
+          <div class="col-6 col-md-3">
             <select class="form-select" [(ngModel)]="selectedStatus" (change)="loadDonations()">
               <option value="">All Statuses</option>
               <option value="verified">Verified</option>
@@ -76,7 +76,7 @@ import { Donation } from '../../core/models/models';
               <option value="failed">Failed</option>
             </select>
           </div>
-          <div class="col-md-2 d-grid">
+          <div class="col-12 col-md-2 d-grid">
             <button class="btn btn-trust-outline" (click)="resetFilters()">
               <i class="bi bi-x-circle me-1"></i> Reset
             </button>
@@ -103,12 +103,18 @@ import { Donation } from '../../core/models/models';
       }
 
       <!-- Donations Table Card -->
-      <div class="admin-card">
+      <div class="admin-card mb-4 shadow-sm">
+        <!-- Horizontal Scroll Hint for Mobile Screens Only -->
+        <div class="d-md-none px-3 py-1.5 bg-light border-bottom d-flex align-items-center justify-content-between text-muted" style="font-size: 11px;">
+          <span><i class="bi bi-arrows-expand me-1" style="transform: rotate(45deg); display: inline-block;"></i> Swipe to view more</span>
+          <span class="badge bg-secondary-subtle text-secondary font-monospace">{{ donations().length }} records</span>
+        </div>
+
         <div class="table-responsive">
           <table class="table admin-table mb-0 align-middle">
             <thead>
               <tr>
-                <th style="width: 42px;" class="text-center">
+                <th style="width: 36px;" class="text-center">
                   <input 
                     type="checkbox" 
                     class="form-check-input" 
@@ -126,7 +132,7 @@ import { Donation } from '../../core/models/models';
                 <th>Txn Ref / UTR</th>
                 <th>Status</th>
                 <th>Date</th>
-                <th class="text-end">Actions</th>
+                <th class="text-end" style="min-width: 155px; width: 155px;">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -139,7 +145,7 @@ import { Donation } from '../../core/models/models';
               } @else {
                 @for (item of donations(); track item.id) {
                   <tr [class.table-primary]="isSelected(item.id)">
-                    <td class="text-center">
+                    <td class="text-center" style="width: 36px;">
                       <input 
                         type="checkbox" 
                         class="form-check-input" 
@@ -148,41 +154,43 @@ import { Donation } from '../../core/models/models';
                       >
                     </td>
                     <td>
-                      <span class="badge bg-light text-dark border font-monospace">{{ item.receipt_number || ('ART-' + item.id) }}</span>
+                      <span class="badge bg-light text-dark border font-monospace px-1.5 py-0.5" style="font-size: 11px;">{{ item.receipt_number || ('ART-' + item.id) }}</span>
                     </td>
                     <td>
-                      <div class="fw-bold text-dark">{{ item.donor_name }}</div>
-                      <div class="small text-muted">{{ item.donor_phone }}</div>
+                      <div class="fw-bold text-dark text-truncate" style="max-width: 125px;" [title]="item.donor_name">{{ item.donor_name }}</div>
+                      <div class="text-muted font-monospace" style="font-size: 11px;">{{ item.donor_phone }}</div>
                       @if (item.donor_email) {
-                        <div class="small text-secondary">{{ item.donor_email }}</div>
+                        <div class="text-secondary text-truncate" style="max-width: 125px; font-size: 10px;" [title]="item.donor_email">{{ item.donor_email }}</div>
                       }
                     </td>
                     <td>
-                      <div class="fw-bold fs-6 text-dark">₹{{ item.amount | number:'1.2-2' }}</div>
+                      <div class="fw-bold text-dark text-nowrap" style="font-size: 0.9rem;">₹{{ item.amount | number:'1.2-2' }}</div>
                     </td>
                     <td>
-                      <span class="badge" [ngClass]="item.donation_type === 'zakat' ? 'bg-success' : 'bg-primary'">
+                      <span class="badge" [ngClass]="item.donation_type === 'zakat' ? 'bg-success' : 'bg-primary'" style="font-size: 10px; padding: 2.5px 5.5px;">
                         {{ item.donation_type | uppercase }}
                       </span>
                     </td>
                     <td>
-                      <span class="badge bg-secondary text-uppercase">{{ item.payment_method }}</span>
+                      <span class="badge bg-secondary text-uppercase" style="font-size: 10px; padding: 2.5px 5px;">{{ item.payment_method }}</span>
                     </td>
                     <td>
-                      <span class="font-monospace small text-muted">{{ item.transaction_id || '-' }}</span>
+                      <span class="font-monospace text-muted text-truncate d-inline-block" style="max-width: 95px; font-size: 10.5px;" [title]="item.transaction_id || '-'">
+                        {{ item.transaction_id || '-' }}
+                      </span>
                     </td>
                     <td>
                       <span class="badge" [ngClass]="{
                         'badge-soft-success': item.status === 'verified' || item.status === 'completed',
                         'badge-soft-warning': item.status === 'pending',
                         'badge-soft-danger': item.status === 'failed'
-                      }">
+                      }" style="font-size: 10px; padding: 2.5px 5.5px;">
                         {{ item.status }}
                       </span>
                     </td>
-                    <td class="small text-muted">{{ item.created_at | date:'mediumDate' }}</td>
-                    <td class="text-end">
-                      <div class="btn-group btn-group-sm">
+                    <td class="text-muted text-nowrap" style="font-size: 11px;">{{ item.created_at | date:'mediumDate' }}</td>
+                    <td class="text-end" style="min-width: 155px; width: 155px; white-space: nowrap;">
+                      <div class="btn-group btn-group-sm action-btn-group">
                         <!-- Download PDF Receipt -->
                         <button class="btn btn-outline-danger" title="Download Official PDF Receipt" (click)="downloadReceiptPDF(item)">
                           <i class="bi bi-file-earmark-pdf"></i>
@@ -223,7 +231,7 @@ import { Donation } from '../../core/models/models';
         </div>
 
         <!-- Pagination Controls -->
-        <div class="p-3 border-top d-flex justify-content-between align-items-center">
+        <div class="p-3 border-top d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
           <div class="small text-muted">
             Showing {{ donations().length }} of {{ totalDonations() }} records
           </div>
@@ -243,7 +251,7 @@ import { Donation } from '../../core/models/models';
     <!-- ADD / EDIT MODAL -->
     @if (showFormModal()) {
       <div class="modal fade show d-block" style="background: rgba(0,0,0,0.5);" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="max-width: 560px;">
           <div class="modal-content border-0 shadow">
             <div class="modal-header" style="background-color: #0F3D63; color: #fff;">
               <h5 class="modal-title fw-bold">
@@ -251,28 +259,28 @@ import { Donation } from '../../core/models/models';
               </h5>
               <button type="button" class="btn-close btn-close-white" (click)="showFormModal.set(false)"></button>
             </div>
-            <div class="modal-body p-4">
+            <div class="modal-body p-3 p-sm-4">
               <form (ngSubmit)="saveDonation()">
                 <div class="mb-3">
                   <label class="form-label small fw-bold">Donor Full Name *</label>
                   <input type="text" class="form-control" [(ngModel)]="formData.donor_name" name="donor_name" required>
                 </div>
                 <div class="row g-2 mb-3">
-                  <div class="col-6">
+                  <div class="col-12 col-sm-6">
                     <label class="form-label small fw-bold">Phone Number *</label>
                     <input type="text" class="form-control" [(ngModel)]="formData.donor_phone" name="donor_phone" placeholder="+91 ..." required>
                   </div>
-                  <div class="col-6">
+                  <div class="col-12 col-sm-6">
                     <label class="form-label small fw-bold">Email (Optional)</label>
                     <input type="email" class="form-control" [(ngModel)]="formData.donor_email" name="donor_email">
                   </div>
                 </div>
                 <div class="row g-2 mb-3">
-                  <div class="col-6">
+                  <div class="col-12 col-sm-6">
                     <label class="form-label small fw-bold">Amount (₹) *</label>
                     <input type="number" class="form-control" [(ngModel)]="formData.amount" name="amount" min="1" required>
                   </div>
-                  <div class="col-6">
+                  <div class="col-12 col-sm-6">
                     <label class="form-label small fw-bold">Donation Purpose *</label>
                     <select class="form-select" [(ngModel)]="formData.donation_type" name="donation_type">
                       <option value="zakat">Zakat</option>
@@ -285,7 +293,7 @@ import { Donation } from '../../core/models/models';
                   </div>
                 </div>
                 <div class="row g-2 mb-3">
-                  <div class="col-6">
+                  <div class="col-12 col-sm-6">
                     <label class="form-label small fw-bold">Payment Mode</label>
                     <select class="form-select" [(ngModel)]="formData.payment_method" name="payment_method">
                       <option value="upi">UPI (GPay/PhonePe/Paytm)</option>
@@ -294,7 +302,7 @@ import { Donation } from '../../core/models/models';
                       <option value="card">Card</option>
                     </select>
                   </div>
-                  <div class="col-6">
+                  <div class="col-12 col-sm-6">
                     <label class="form-label small fw-bold">Verification Status</label>
                     <select class="form-select" [(ngModel)]="formData.status" name="status">
                       <option value="verified">Verified</option>

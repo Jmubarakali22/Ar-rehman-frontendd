@@ -11,7 +11,7 @@ import { GalleryItem } from '../../core/models/models';
   template: `
     <div class="gallery-page">
       <!-- Top Page Header -->
-      <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+      <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-4 gap-3">
         <div>
           <div class="d-flex align-items-center gap-2">
             <h2 class="h4 fw-bold mb-0" style="color: #0F3D63;">Gallery Photos</h2>

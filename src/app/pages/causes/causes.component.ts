@@ -11,12 +11,12 @@ import { Cause } from '../../core/models/models';
   template: `
     <div class="causes-page">
       <!-- Page Header -->
-      <div class="d-flex flex-wrap align-items-center justify-content-between mb-4 gap-3">
+      <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-4 gap-3">
         <div>
           <h2 class="h4 fw-bold mb-1" style="color: #0F3D63;">Causes & Programs</h2>
           <p class="text-muted small mb-0">Manage community initiatives, target funding goals, and relief drives.</p>
         </div>
-        <div>
+        <div class="flex-shrink-0">
           <button class="btn btn-trust-primary btn-sm" (click)="openAddModal()">
             <i class="bi bi-plus-lg me-1"></i> Add New Cause
           </button>
@@ -25,8 +25,8 @@ import { Cause } from '../../core/models/models';
 
       <!-- Filters & Search -->
       <div class="admin-card p-3 mb-4">
-        <div class="row g-2">
-          <div class="col-md-6">
+        <div class="row g-2 align-items-center">
+          <div class="col-12 col-md-6">
             <div class="input-group">
               <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
               <input 
@@ -38,7 +38,7 @@ import { Cause } from '../../core/models/models';
               >
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-8 col-md-4">
             <select class="form-select" [(ngModel)]="statusFilter" (change)="filterCauses()">
               <option value="">All Statuses</option>
               <option value="active">Active Causes</option>
@@ -46,7 +46,7 @@ import { Cause } from '../../core/models/models';
               <option value="paused">Paused</option>
             </select>
           </div>
-          <div class="col-md-2 d-grid">
+          <div class="col-4 col-md-2 d-grid">
             <button class="btn btn-trust-outline" (click)="resetFilters()">Reset</button>
           </div>
         </div>
