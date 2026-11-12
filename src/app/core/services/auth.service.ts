@@ -20,8 +20,15 @@ export class AuthService {
 
   private getStoredUser(): Admin | null {
     try {
-      const user = localStorage.getItem('art_user');
-      return user ? JSON.parse(user) : null;
+      const raw = localStorage.getItem('art_user');
+      if (!raw) return null;
+      const user = JSON.parse(raw);
+      if (user && (user.name === 'Ar-Rahman Super Admin' || user.username === 'Ar-Rahman Super Admin' || user.name === 'Ar-Rahman SuperAdmin')) {
+        user.name = 'Super Admin';
+        user.username = 'Super Admin';
+        localStorage.setItem('art_user', JSON.stringify(user));
+      }
+      return user;
     } catch {
       return null;
     }

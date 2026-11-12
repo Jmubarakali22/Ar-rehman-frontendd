@@ -143,10 +143,10 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
             <div class="dropdown">
               <div class="d-flex align-items-center gap-2 cursor-pointer" role="button" data-bs-toggle="dropdown">
                 <div class="avatar-circle">
-                  {{ (authService.currentUser()?.name || 'A').charAt(0).toUpperCase() }}
+                  {{ getDisplayName().charAt(0).toUpperCase() }}
                 </div>
                 <div class="d-none d-lg-block text-start">
-                  <div class="fw-bold small lh-1 mb-1">{{ authService.currentUser()?.name || 'Admin' }}</div>
+                  <div class="fw-bold small lh-1 mb-1">{{ getDisplayName() }}</div>
                   <span class="badge bg-light text-dark border small py-0 px-1">{{ authService.currentUser()?.role || 'admin' }}</span>
                 </div>
               </div>
@@ -424,6 +424,17 @@ export class AdminLayoutComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.autoLogoutService.start();
+    if (this.authService.token()) {
+      this.authService.getProfile().subscribe({ error: () => {} });
+    }
+  }
+
+  getDisplayName(): string {
+    const raw = this.authService.currentUser()?.name || '';
+    if (!raw || raw.toLowerCase().includes('ar-rahman')) {
+      return 'Super Admin';
+    }
+    return raw;
   }
 
   ngOnDestroy(): void {
