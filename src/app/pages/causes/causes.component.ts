@@ -396,6 +396,57 @@ export class CausesComponent implements OnInit {
     this.showModal.set(true);
   }
 
+  private async uploadToImageKit(file: File, folder: string = '/assets/causes'): Promise<string> {
+    const publicKey = 'public_IgReEEKPDIGSDKorGWD4rhDAy7Y=';
+    const privateKey = 'private_rUmwJc3xZw75UR1m/uRLZvvEs0E=';
+    const token = 'cause_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+    const expire = Math.floor(Date.now() / 1000) + 1800;
+
+    // Generate HMAC-SHA1 signature using standard Web Crypto API supported by all modern browsers
+    const enc = new TextEncoder();
+    const key = await window.crypto.subtle.importKey(
+      'raw',
+      enc.encode(privateKey),
+      { name: 'HMAC', hash: 'SHA-1' },
+      false,
+      ['sign']
+    );
+    const sigBuf = await window.crypto.subtle.sign(
+      'HMAC',
+      key,
+      enc.encode(token + expire)
+    );
+    const signature = Array.from(new Uint8Array(sigBuf))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    const ikFormData = new FormData();
+    ikFormData.append('file', file);
+    ikFormData.append('fileName', file.name);
+    ikFormData.append('publicKey', publicKey);
+    ikFormData.append('signature', signature);
+    ikFormData.append('expire', expire.toString());
+    ikFormData.append('token', token);
+    ikFormData.append('folder', folder);
+    ikFormData.append('useUniqueFileName', 'false');
+
+    const res = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+      method: 'POST',
+      body: ikFormData
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || 'ImageKit upload failed with HTTP status ' + res.status);
+    }
+
+    const data = await res.json();
+    if (!data.url) {
+      throw new Error('ImageKit upload did not return a valid URL.');
+    }
+    return data.url;
+  }
+
   async saveCause(): Promise<void> {
     if (!this.formData.title || !this.formData.category || !this.formData.description) {
       alert('Please fill in Title, Category, and Description.');
@@ -403,44 +454,19 @@ export class CausesComponent implements OnInit {
     }
 
     this.isSubmitting.set(true);
-    this.uploadingStatus = 'Uploading photo to ImageKit...';
 
     try {
       let finalImageUrl = this.formData.image_url || 'https://ik.imagekit.io/baaidzoik/assets/causes/food_dist.png';
 
       // 1. If user selected a local file, upload directly to ImageKit (/assets/causes/)
       if (this.imageSourceMode === 'upload' && this.selectedFile) {
-        try {
-          const ikFormData = new FormData();
-          ikFormData.append('file', this.selectedFile);
-          ikFormData.append('fileName', this.selectedFile.name);
-          ikFormData.append('folder', '/assets/causes');
-          ikFormData.append('useUniqueFileName', 'false');
-
-          const ikRes = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
-            method: 'POST',
-            headers: {
-              'Authorization': 'Basic cHJpdmF0ZV9yVW13SmMzeFp3NzVVUjFtL3VSTEZ2dkVzMEU9Og=='
-            },
-            body: ikFormData
-          });
-
-          if (ikRes.ok) {
-            const ikData = await ikRes.json();
-            if (ikData.url) {
-              finalImageUrl = ikData.url;
-            }
-          } else {
-            console.warn('ImageKit direct upload response not ok:', await ikRes.text());
-          }
-        } catch (ikErr) {
-          console.warn('Direct ImageKit upload failed:', ikErr);
-        }
+        this.uploadingStatus = 'Uploading photo to ImageKit (/assets/causes)...';
+        finalImageUrl = await this.uploadToImageKit(this.selectedFile, '/assets/causes');
       }
 
       this.uploadingStatus = 'Saving cause details...';
 
-      // 2. Prepare payload for API
+      // 2. Prepare payload for API with the ImageKit URL
       const payload: any = {
         title: this.formData.title,
         category: this.formData.category,
@@ -482,7 +508,7 @@ export class CausesComponent implements OnInit {
     } catch (err: any) {
       this.isSubmitting.set(false);
       this.uploadingStatus = '';
-      alert('Error saving cause: ' + (err.message || err));
+      alert('ImageKit upload error: ' + (err.message || err));
     }
   }
 
