@@ -145,9 +145,9 @@ import { DashboardStats, Donation } from '../../core/models/models';
 
         <!-- Main Dashboard Split View -->
         <div class="row g-4 mb-4">
-          <!-- Recent Donations Table (Recent 5 with Scroll Support) -->
+          <!-- Recent Donations Table (Recent 5 with Visible Scroller) -->
           <div class="col-lg-8">
-            <div class="admin-card">
+            <div class="admin-card h-100 d-flex flex-column">
               <div class="card-header-clean">
                 <div class="d-flex align-items-center gap-2">
                   <h5 class="card-title-clean mb-0">
@@ -157,9 +157,9 @@ import { DashboardStats, Donation } from '../../core/models/models';
                 </div>
                 <a routerLink="/donations" class="btn btn-sm btn-link text-decoration-none">View All</a>
               </div>
-              <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
+              <div class="table-responsive recent-donations-scroll flex-grow-1">
                 <table class="table admin-table mb-0 align-middle">
-                  <thead class="sticky-top bg-light">
+                  <thead class="sticky-top bg-light" style="top: 0; z-index: 5; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                     <tr>
                       <th style="min-width: 100px;">Receipt #</th>
                       <th style="min-width: 130px;">Donor</th>
@@ -219,13 +219,13 @@ import { DashboardStats, Donation } from '../../core/models/models';
 
           <!-- Quick Navigation Hub -->
           <div class="col-lg-4">
-            <div class="admin-card">
+            <div class="admin-card h-100 d-flex flex-column">
               <div class="card-header-clean">
                 <h5 class="card-title-clean">
                   <i class="bi bi-lightning-charge-fill text-warning"></i> Quick Management
                 </h5>
               </div>
-              <div class="p-3 d-grid gap-2">
+              <div class="p-3 d-grid gap-2 flex-grow-1 align-content-start">
                 <a routerLink="/donations" class="btn btn-outline-primary btn-sm text-start d-flex align-items-center justify-content-between">
                   <span><i class="bi bi-receipt me-2"></i> Manage Donations & Receipts</span>
                   <i class="bi bi-chevron-right"></i>
@@ -248,7 +248,30 @@ import { DashboardStats, Donation } from '../../core/models/models';
         </div>
       }
     </div>
-  `
+  `,
+  styles: [`
+    .recent-donations-scroll {
+      max-height: 205px;
+      overflow-y: auto;
+      overflow-x: auto;
+      scrollbar-gutter: stable;
+    }
+    .recent-donations-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .recent-donations-scroll::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+    .recent-donations-scroll::-webkit-scrollbar-thumb {
+      background: #0f3d63;
+      border-radius: 4px;
+    }
+    .recent-donations-scroll::-webkit-scrollbar-thumb:hover {
+      background: #16568a;
+    }
+  `]
 })
 export class DashboardComponent implements OnInit {
   isLoading = signal(true);

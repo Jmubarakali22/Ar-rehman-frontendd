@@ -100,16 +100,19 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
         </div>
 
         <!-- Sidebar Footer Status -->
-        <div class="sidebar-footer p-3 mt-auto border-top border-secondary border-opacity-25" *ngIf="!isSidebarCollapsed()">
-          <div class="d-flex align-items-center gap-2">
+        <div class="sidebar-footer px-3 py-2 mt-auto border-top border-secondary border-opacity-25 d-flex align-items-center" *ngIf="!isSidebarCollapsed()">
+          <div class="d-flex align-items-center gap-2 text-nowrap">
             <span class="status-indicator online"></span>
-            <div class="small text-white-50">Charity Reg. No. 04/16/2020</div>
+            <span class="small text-white-50 font-monospace" style="font-size: 11.5px;">Charity Reg. No. 04/16/2020</span>
           </div>
+        </div>
+        <div class="sidebar-footer px-2 py-2 mt-auto border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-center" *ngIf="isSidebarCollapsed()" title="Charity Reg. No. 04/16/2020">
+          <span class="status-indicator online"></span>
         </div>
       </aside>
 
       <!-- Main Layout Right Side -->
-      <div class="admin-main flex-grow-1 d-flex flex-column">
+      <div class="admin-main flex-grow-1 d-flex flex-column min-vh-100">
         <!-- Top Navbar -->
         <header class="admin-topbar px-3 px-md-4 py-2 bg-white border-bottom d-flex align-items-center justify-content-between sticky-top">
           <div class="d-flex align-items-center gap-2 gap-md-3">
@@ -173,6 +176,20 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
         <main class="page-body p-2 p-md-3 p-xl-3 flex-grow-1">
           <router-outlet></router-outlet>
         </main>
+
+        <!-- Admin Page Footer (Aligned with Navigation Bar / Sidebar Footer) -->
+        <footer class="admin-page-footer px-3 px-md-4 py-2 bg-white border-top d-flex flex-wrap align-items-center justify-content-between mt-auto">
+          <div class="d-flex align-items-center gap-2">
+            <span class="status-indicator online"></span>
+            <span class="small text-muted font-monospace" style="font-size: 11.5px;">
+              Charity Reg. No. <strong class="text-dark">04/16/2020</strong> &bull; Pernambut, Vellore Dist.
+            </span>
+          </div>
+          <div class="d-flex align-items-center gap-3 small text-muted font-monospace" style="font-size: 11.5px;">
+            <span class="d-none d-md-inline">Ar Rahman Trust &bull; Charity Operations</span>
+            <span class="text-secondary">&copy; {{ currentYear }} All rights reserved</span>
+          </div>
+        </footer>
 
         <!-- Inactivity Countdown Warning Modal -->
         @if (autoLogoutService.showWarningModal()) {
@@ -380,9 +397,29 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
       z-index: 1020;
       min-width: 0;
     }
+    .sidebar-footer {
+      height: 48px;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      background: #081f33;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      flex-shrink: 0;
+    }
+    .admin-page-footer {
+      height: 48px;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      border-top: 1px solid var(--border-color, #e5e7eb);
+      flex-shrink: 0;
+      z-index: 10;
+    }
   `]
 })
 export class AdminLayoutComponent implements OnInit, OnDestroy {
+  readonly currentYear = new Date().getFullYear();
   isSidebarCollapsed = signal(false);
   isMobileSidebarOpen = signal(false);
 
