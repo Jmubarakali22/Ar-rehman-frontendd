@@ -128,17 +128,6 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
               <span class="d-none d-sm-inline">Live Website</span>
             </a>
 
-            <!-- Quick Add Donation Button -->
-            <a 
-              routerLink="/donations" 
-              class="btn btn-sm text-white rounded-pill px-2 px-sm-3 d-flex align-items-center gap-1 gap-sm-2 fw-semibold" 
-              style="background-color: #0F3D63;"
-              title="Record New Donation"
-            >
-              <i class="bi bi-plus-circle"></i>
-              <span class="d-none d-sm-inline">Add Donation</span>
-            </a>
-
             <!-- Profile Info & Logout -->
             <div class="dropdown">
               <div class="d-flex align-items-center gap-2 cursor-pointer" role="button" data-bs-toggle="dropdown">
