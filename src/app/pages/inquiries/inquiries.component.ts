@@ -58,75 +58,77 @@ import { ContactInquiry } from '../../core/models/models';
           <div class="spinner-border text-primary" role="status"></div>
         </div>
       } @else {
-        <div class="row g-3">
-          @for (inq of filteredInquiries(); track inq.id) {
-            <div class="col-12">
-              <div class="admin-card p-3" [class.border-start]="inq.status === 'unread'" [style.border-left-width]="inq.status === 'unread' ? '4px' : '1px'" [style.border-left-color]="inq.status === 'unread' ? '#dc3545' : '#e5e7eb'">
-                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
-                  <div class="d-flex align-items-center gap-2">
-                    <span class="badge" [ngClass]="{
-                      'badge-soft-danger': inq.status === 'unread',
-                      'badge-soft-info': inq.status === 'read',
-                      'badge-soft-success': inq.status === 'replied'
-                    }">
-                      {{ inq.status | uppercase }}
-                    </span>
-                    <h6 class="fw-bold mb-0 text-dark">{{ inq.subject || 'General Inquiry' }}</h6>
+        <div class="admin-table-scroll pe-1 mb-4" style="max-height: 560px; overflow-y: auto; overflow-x: hidden;">
+          <div class="row g-3">
+            @for (inq of filteredInquiries(); track inq.id) {
+              <div class="col-12">
+                <div class="admin-card p-3" [class.border-start]="inq.status === 'unread'" [style.border-left-width]="inq.status === 'unread' ? '4px' : '1px'" [style.border-left-color]="inq.status === 'unread' ? '#dc3545' : '#e5e7eb'">
+                  <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge" [ngClass]="{
+                        'badge-soft-danger': inq.status === 'unread',
+                        'badge-soft-info': inq.status === 'read',
+                        'badge-soft-success': inq.status === 'replied'
+                      }">
+                        {{ inq.status | uppercase }}
+                      </span>
+                      <h6 class="fw-bold mb-0 text-dark">{{ inq.subject || 'General Inquiry' }}</h6>
+                    </div>
+                    <div class="small text-muted">{{ inq.created_at | date:'medium' }}</div>
                   </div>
-                  <div class="small text-muted">{{ inq.created_at | date:'medium' }}</div>
-                </div>
 
-                <div class="small text-secondary mb-2">
-                  From: <strong class="text-dark">{{ inq.name }}</strong> &bull;
-                  <a [href]="'mailto:' + inq.email" class="text-primary text-decoration-none me-2">
-                    <i class="bi bi-envelope me-1"></i>{{ inq.email }}
-                  </a>
-                  @if (inq.phone) {
-                    &bull; <a [href]="'tel:' + inq.phone" class="text-success text-decoration-none">
-                      <i class="bi bi-telephone me-1"></i>{{ inq.phone }}
+                  <div class="small text-secondary mb-2">
+                    From: <strong class="text-dark">{{ inq.name }}</strong> &bull;
+                    <a [href]="'mailto:' + inq.email" class="text-primary text-decoration-none me-2">
+                      <i class="bi bi-envelope me-1"></i>{{ inq.email }}
                     </a>
+                    @if (inq.phone) {
+                      &bull; <a [href]="'tel:' + inq.phone" class="text-success text-decoration-none">
+                        <i class="bi bi-telephone me-1"></i>{{ inq.phone }}
+                      </a>
+                    }
+                  </div>
+
+                  <p class="small text-dark bg-light p-3 rounded-2 mb-2 border">
+                    {{ inq.message }}
+                  </p>
+
+                  @if (inq.admin_notes) {
+                    <div class="small text-muted mb-2 ps-2 border-start border-2 border-info">
+                      <strong>Admin Note:</strong> {{ inq.admin_notes }}
+                    </div>
                   }
-                </div>
 
-                <p class="small text-dark bg-light p-3 rounded-2 mb-2 border">
-                  {{ inq.message }}
-                </p>
-
-                @if (inq.admin_notes) {
-                  <div class="small text-muted mb-2 ps-2 border-start border-2 border-info">
-                    <strong>Admin Note:</strong> {{ inq.admin_notes }}
-                  </div>
-                }
-
-                <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                  <div class="d-flex gap-2">
-                    @if (inq.status === 'unread') {
-                      <button class="btn btn-sm btn-outline-secondary" (click)="updateStatus(inq.id, 'read')">
-                        <i class="bi bi-envelope-open me-1"></i> Mark Read
+                  <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                    <div class="d-flex gap-2">
+                      @if (inq.status === 'unread') {
+                        <button class="btn btn-sm btn-outline-secondary" (click)="updateStatus(inq.id, 'read')">
+                          <i class="bi bi-envelope-open me-1"></i> Mark Read
+                        </button>
+                      }
+                      @if (inq.status !== 'replied') {
+                        <button class="btn btn-sm btn-outline-success" (click)="updateStatus(inq.id, 'replied')">
+                          <i class="bi bi-check2-all me-1"></i> Mark Replied
+                        </button>
+                      }
+                    </div>
+                    <div class="d-flex gap-2">
+                      <a [href]="'mailto:' + inq.email + '?subject=Re: ' + (inq.subject || 'Inquiry regarding Ar Rahman Trust')" class="btn btn-sm btn-trust-primary">
+                        <i class="bi bi-reply-fill me-1"></i> Reply via Email
+                      </a>
+                      <button class="btn btn-sm btn-outline-danger" (click)="deleteInquiry(inq.id)">
+                        <i class="bi bi-trash"></i>
                       </button>
-                    }
-                    @if (inq.status !== 'replied') {
-                      <button class="btn btn-sm btn-outline-success" (click)="updateStatus(inq.id, 'replied')">
-                        <i class="bi bi-check2-all me-1"></i> Mark Replied
-                      </button>
-                    }
-                  </div>
-                  <div class="d-flex gap-2">
-                    <a [href]="'mailto:' + inq.email + '?subject=Re: ' + (inq.subject || 'Inquiry regarding Ar Rahman Trust')" class="btn btn-sm btn-trust-primary">
-                      <i class="bi bi-reply-fill me-1"></i> Reply via Email
-                    </a>
-                    <button class="btn btn-sm btn-outline-danger" (click)="deleteInquiry(inq.id)">
-                      <i class="bi bi-trash"></i>
-                    </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          } @empty {
-            <div class="col-12 text-center py-5 text-muted">
-              No inquiries found in this view.
-            </div>
-          }
+            } @empty {
+              <div class="col-12 text-center py-5 text-muted">
+                No inquiries found in this view.
+              </div>
+            }
+          </div>
         </div>
       }
     </div>

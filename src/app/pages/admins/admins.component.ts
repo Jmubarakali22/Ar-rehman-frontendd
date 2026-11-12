@@ -25,9 +25,9 @@ import { Admin } from '../../core/models/models';
 
       <!-- Admins Table Card -->
       <div class="admin-card mb-4">
-        <div class="table-responsive">
+        <div class="table-responsive admin-table-scroll">
           <table class="table admin-table mb-0 align-middle" style="min-width: 680px;">
-            <thead>
+            <thead class="sticky-top bg-light" style="top: 0; z-index: 5; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
               <tr>
                 <th style="min-width: 140px;">User / Name</th>
                 <th style="min-width: 110px;">Username</th>

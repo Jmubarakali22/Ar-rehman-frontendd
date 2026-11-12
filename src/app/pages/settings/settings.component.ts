@@ -197,9 +197,9 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
       <!-- TAB 3: Audit Activity Logs -->
       @if (activeTab === 'logs') {
         <div class="admin-card">
-          <div class="table-responsive">
+          <div class="table-responsive admin-table-scroll">
             <table class="table admin-table mb-0 align-middle" style="min-width: 650px;">
-              <thead>
+              <thead class="sticky-top bg-light" style="top: 0; z-index: 5; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                 <tr>
                   <th>Timestamp</th>
                   <th>Admin Name</th>

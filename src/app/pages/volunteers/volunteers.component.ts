@@ -54,9 +54,9 @@ import { Volunteer } from '../../core/models/models';
 
       <!-- Volunteers Table -->
       <div class="admin-card mb-4">
-        <div class="table-responsive">
+        <div class="table-responsive admin-table-scroll">
           <table class="table admin-table mb-0 align-middle" style="min-width: 820px;">
-            <thead>
+            <thead class="sticky-top bg-light" style="top: 0; z-index: 5; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
               <tr>
                 <th style="min-width: 140px;">Volunteer Name</th>
                 <th style="min-width: 130px;">Phone & Contact</th>

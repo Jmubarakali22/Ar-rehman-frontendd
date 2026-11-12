@@ -107,9 +107,9 @@ import { Donation } from '../../core/models/models';
           <span class="badge bg-secondary-subtle text-secondary font-monospace">{{ donations().length }} records</span>
         </div>
 
-        <div class="table-responsive">
+        <div class="table-responsive admin-table-scroll">
           <table class="table admin-table mb-0 align-middle">
-            <thead>
+            <thead class="sticky-top bg-light" style="top: 0; z-index: 5; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
               <tr>
                 <th style="width: 36px;" class="text-center">
                   <input 
