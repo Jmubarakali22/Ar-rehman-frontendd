@@ -58,7 +58,7 @@ import { Cause } from '../../core/models/models';
           <div class="spinner-border text-primary" role="status"></div>
         </div>
       } @else {
-        <div class="row g-4 mb-4">
+        <div class="row g-4 mb-2">
           @for (item of filteredCauses(); track item.id) {
             <div class="col-md-6 col-xl-4">
               <div class="admin-card h-100 d-flex flex-column overflow-hidden">

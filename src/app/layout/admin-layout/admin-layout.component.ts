@@ -28,8 +28,7 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
               class="brand-logo"
             >
             <div class="brand-text" *ngIf="!isSidebarCollapsed()">
-              <div class="fw-bold brand-title">Ar Rahman</div>
-              <div class="brand-subtitle">Charity Admin</div>
+              <div class="fw-bold brand-title fs-6">Ar Rahman Trust</div>
             </div>
           </div>
           <!-- Close button on mobile -->
@@ -103,7 +102,7 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
         <div class="sidebar-footer px-3 py-2 mt-auto border-top border-secondary border-opacity-25 d-flex align-items-center" *ngIf="!isSidebarCollapsed()">
           <div class="d-flex align-items-center gap-2 text-nowrap">
             <span class="status-indicator online"></span>
-            <span class="small text-white-50 font-monospace" style="font-size: 11.5px;">Charity Reg. No. 04/16/2020</span>
+            <span class="small text-white-50" style="font-size: 12px;">Charity Reg. No. 04/16/2020</span>
           </div>
         </div>
         <div class="sidebar-footer px-2 py-2 mt-auto border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-center" *ngIf="isSidebarCollapsed()" title="Charity Reg. No. 04/16/2020">
@@ -181,11 +180,11 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
         <footer class="admin-page-footer px-3 px-md-4 py-2 bg-white border-top d-flex flex-wrap align-items-center justify-content-between">
           <div class="d-flex align-items-center gap-2">
             <span class="status-indicator online"></span>
-            <span class="small text-muted font-monospace" style="font-size: 11.5px;">
+            <span class="small text-muted" style="font-size: 12px;">
               Charity Reg. No. <strong class="text-dark">04/16/2020</strong> &bull; Pernambut, Vellore Dist.
             </span>
           </div>
-          <div class="d-flex align-items-center gap-3 small text-muted font-monospace" style="font-size: 11.5px;">
+          <div class="d-flex align-items-center gap-3 small text-muted" style="font-size: 12px;">
             <span class="d-none d-md-inline">Ar Rahman Trust &bull; Charity Operations</span>
             <span class="text-secondary">&copy; {{ currentYear }} All rights reserved</span>
           </div>

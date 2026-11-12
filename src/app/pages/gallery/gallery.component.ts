@@ -227,7 +227,7 @@ import { GalleryItem } from '../../core/models/models';
 
         <!-- Pagination Controls -->
         @if (totalPages() > 1) {
-          <div class="d-flex justify-content-center align-items-center gap-2 mt-3 pb-3">
+          <div class="d-flex justify-content-center align-items-center gap-2 mt-2 mb-1">
             <button 
               class="btn btn-sm btn-outline-secondary px-3 rounded-pill" 
               [disabled]="currentPage === 1"

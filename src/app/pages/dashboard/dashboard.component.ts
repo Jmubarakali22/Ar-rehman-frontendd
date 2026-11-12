@@ -144,7 +144,7 @@ import { DashboardStats, Donation } from '../../core/models/models';
         </div>
 
         <!-- Main Dashboard Split View -->
-        <div class="row g-4 mb-4">
+        <div class="row g-4 mb-2">
           <!-- Recent Donations Table (Recent 5 with Visible Scroller) -->
           <div class="col-lg-8">
             <div class="admin-card h-100 d-flex flex-column">
@@ -186,9 +186,9 @@ import { DashboardStats, Donation } from '../../core/models/models';
                           <span class="badge" [ngClass]="{
                             'bg-success': item.donation_type === 'zakat' || item.donation_type === 'zakath',
                             'bg-primary': item.donation_type === 'sadaqah',
-                            'bg-info text-dark': item.donation_type === 'monthly_donation'
+                            'bg-info text-dark': item.donation_type === 'monthly_donation' || item.donation_type === 'monthly_contribution' || item.donation_type === 'monthly'
                           }" style="font-size: 10px; padding: 2.5px 5.5px;">
-                            {{ item.donation_type === 'monthly_donation' ? 'MONTHLY' : (item.donation_type === 'zakat' ? 'ZAKATH' : (item.donation_type | uppercase)) }}
+                            {{ (item.donation_type === 'monthly_donation' || item.donation_type === 'monthly_contribution' || item.donation_type === 'monthly') ? 'MONTHLY' : (item.donation_type === 'zakat' ? 'ZAKATH' : (item.donation_type | uppercase)) }}
                           </span>
                         </td>
                         <td class="fw-bold text-dark text-nowrap">₹{{ item.amount | number:'1.2-2' }}</td>
@@ -201,7 +201,7 @@ import { DashboardStats, Donation } from '../../core/models/models';
                             'badge-soft-warning': item.status === 'pending',
                             'badge-soft-danger': item.status === 'failed'
                           }" style="font-size: 10px; padding: 2.5px 5.5px;">
-                            {{ item.status }}
+                            {{ item.status === 'completed' ? 'verified' : item.status }}
                           </span>
                         </td>
                         <td class="small text-muted text-nowrap" style="font-size: 11.5px;">{{ item.created_at | date:'shortDate' }}</td>

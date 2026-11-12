@@ -62,14 +62,13 @@ import { Donation } from '../../core/models/models';
               <option value="">All Donation Types</option>
               <option value="sadaqah">Sadaqah</option>
               <option value="zakat">Zakath</option>
-              <option value="monthly_donation">Monthly Donation</option>
+              <option value="monthly_contribution">Monthly Contribution</option>
             </select>
           </div>
           <div class="col-6 col-md-3">
             <select class="form-select" [(ngModel)]="selectedStatus" (change)="loadDonations()">
               <option value="">All Statuses</option>
               <option value="verified">Verified</option>
-              <option value="completed">Completed</option>
               <option value="pending">Pending</option>
               <option value="failed">Failed</option>
             </select>
@@ -164,7 +163,7 @@ import { Donation } from '../../core/models/models';
       }
 
       <!-- Donations Table Card -->
-      <div class="admin-card mb-4 shadow-sm">
+      <div class="admin-card mb-2 shadow-sm">
         <!-- Horizontal Scroll Hint for Mobile Screens Only -->
         <div class="d-md-none px-3 py-1.5 bg-light border-bottom d-flex align-items-center justify-content-between text-muted" style="font-size: 11px;">
           <span><i class="bi bi-arrows-expand me-1" style="transform: rotate(45deg); display: inline-block;"></i> Swipe to view more</span>
@@ -231,9 +230,9 @@ import { Donation } from '../../core/models/models';
                       <span class="badge" [ngClass]="{
                         'bg-success': item.donation_type === 'zakat' || item.donation_type === 'zakath',
                         'bg-primary': item.donation_type === 'sadaqah',
-                        'bg-info text-dark': item.donation_type === 'monthly_donation'
+                        'bg-info text-dark': item.donation_type === 'monthly_contribution' || item.donation_type === 'monthly_donation' || item.donation_type === 'monthly'
                       }" style="font-size: 10px; padding: 2.5px 5.5px;">
-                        {{ item.donation_type === 'monthly_donation' ? 'MONTHLY' : (item.donation_type === 'zakat' ? 'ZAKATH' : (item.donation_type | uppercase)) }}
+                        {{ (item.donation_type === 'monthly_contribution' || item.donation_type === 'monthly_donation' || item.donation_type === 'monthly') ? 'MONTHLY' : (item.donation_type === 'zakat' ? 'ZAKATH' : (item.donation_type | uppercase)) }}
                       </span>
                     </td>
                     <td>
@@ -250,7 +249,7 @@ import { Donation } from '../../core/models/models';
                         'badge-soft-warning': item.status === 'pending',
                         'badge-soft-danger': item.status === 'failed'
                       }" style="font-size: 10px; padding: 2.5px 5.5px;">
-                        {{ item.status }}
+                        {{ item.status === 'completed' ? 'verified' : item.status }}
                       </span>
                     </td>
                     <td class="text-muted text-nowrap" style="font-size: 11px;">{{ item.created_at | date:'mediumDate' }}</td>
@@ -350,7 +349,7 @@ import { Donation } from '../../core/models/models';
                     <select class="form-select" [(ngModel)]="formData.donation_type" name="donation_type">
                       <option value="sadaqah">Sadaqah</option>
                       <option value="zakat">Zakath</option>
-                      <option value="monthly_donation">Monthly Donation</option>
+                      <option value="monthly_contribution">Monthly Contribution</option>
                     </select>
                   </div>
                 </div>
@@ -368,7 +367,6 @@ import { Donation } from '../../core/models/models';
                     <label class="form-label small fw-bold">Verification Status</label>
                     <select class="form-select" [(ngModel)]="formData.status" name="status">
                       <option value="verified">Verified</option>
-                      <option value="completed">Completed</option>
                       <option value="pending">Pending</option>
                       <option value="failed">Failed</option>
                     </select>
@@ -467,9 +465,9 @@ import { Donation } from '../../core/models/models';
                       <span class="badge text-uppercase fs-6 px-3 py-1 mt-1" [ngClass]="{
                         'bg-success': activeReceipt?.donation_type === 'zakat' || activeReceipt?.donation_type === 'zakath',
                         'bg-primary': activeReceipt?.donation_type === 'sadaqah',
-                        'bg-info text-dark': activeReceipt?.donation_type === 'monthly_donation'
+                        'bg-info text-dark': activeReceipt?.donation_type === 'monthly_contribution' || activeReceipt?.donation_type === 'monthly_donation' || activeReceipt?.donation_type === 'monthly'
                       }">
-                        {{ activeReceipt?.donation_type === 'monthly_donation' ? 'Monthly Donation' : ((activeReceipt?.donation_type === 'zakat' ? 'Zakath' : activeReceipt?.donation_type) + ' Donation') }}
+                        {{ (activeReceipt?.donation_type === 'monthly_contribution' || activeReceipt?.donation_type === 'monthly_donation' || activeReceipt?.donation_type === 'monthly') ? 'Monthly Contribution' : ((activeReceipt?.donation_type === 'zakat' ? 'Zakath' : activeReceipt?.donation_type) + ' Donation') }}
                       </span>
                       <div class="small text-muted mt-2">Mode: <strong class="text-uppercase text-dark">{{ activeReceipt?.payment_method }}</strong></div>
                       <div class="small font-monospace text-muted">Ref/UTR: {{ activeReceipt?.transaction_id || 'N/A' }}</div>
@@ -597,9 +595,9 @@ import { Donation } from '../../core/models/models';
                   <span class="badge text-uppercase fs-6 px-3 py-1 mt-1" [ngClass]="{
                     'bg-success': activeReceipt?.donation_type === 'zakat' || activeReceipt?.donation_type === 'zakath',
                     'bg-primary': activeReceipt?.donation_type === 'sadaqah',
-                    'bg-info text-dark': activeReceipt?.donation_type === 'monthly_donation'
+                    'bg-info text-dark': activeReceipt?.donation_type === 'monthly_contribution' || activeReceipt?.donation_type === 'monthly_donation' || activeReceipt?.donation_type === 'monthly'
                   }">
-                    {{ activeReceipt?.donation_type === 'monthly_donation' ? 'Monthly Donation' : ((activeReceipt?.donation_type === 'zakat' ? 'Zakath' : activeReceipt?.donation_type) + ' Donation') }}
+                    {{ (activeReceipt?.donation_type === 'monthly_contribution' || activeReceipt?.donation_type === 'monthly_donation' || activeReceipt?.donation_type === 'monthly') ? 'Monthly Contribution' : ((activeReceipt?.donation_type === 'zakat' ? 'Zakath' : activeReceipt?.donation_type) + ' Donation') }}
                   </span>
                   <div class="small text-muted mt-2">Mode: <strong class="text-uppercase text-dark">{{ activeReceipt?.payment_method }}</strong></div>
                   <div class="small font-monospace text-muted">Ref/UTR: {{ activeReceipt?.transaction_id || 'N/A' }}</div>
@@ -676,7 +674,7 @@ import { Donation } from '../../core/models/models';
               <div class="p-3 bg-light rounded-3 mb-3 border">
                 <div class="d-flex justify-content-between align-items-center mb-1">
                   <span class="badge bg-secondary font-monospace">{{ formatReceiptNo(selectedWhatsAppDonation) }}</span>
-                  <span class="badge bg-success text-uppercase">{{ selectedWhatsAppDonation?.donation_type === 'monthly_donation' ? 'MONTHLY DONATION' : (selectedWhatsAppDonation?.donation_type === 'zakat' ? 'ZAKATH' : selectedWhatsAppDonation?.donation_type) }}</span>
+                  <span class="badge bg-success text-uppercase">{{ (selectedWhatsAppDonation?.donation_type === 'monthly_contribution' || selectedWhatsAppDonation?.donation_type === 'monthly_donation' || selectedWhatsAppDonation?.donation_type === 'monthly') ? 'MONTHLY CONTRIBUTION' : (selectedWhatsAppDonation?.donation_type === 'zakat' ? 'ZAKATH' : selectedWhatsAppDonation?.donation_type) }}</span>
                 </div>
                 <div class="fw-bold text-dark fs-5">{{ selectedWhatsAppDonation?.donor_name }}</div>
                 <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
@@ -1296,7 +1294,14 @@ Jazakallahu Khairan for your continuous benevolence and trust.
 
   openEditModal(item: Donation): void {
     this.isEditing.set(true);
-    this.formData = { ...item };
+    const copy: any = { ...item };
+    if (copy.status === 'completed') {
+      copy.status = 'verified';
+    }
+    if (copy.donation_type === 'monthly_donation' || copy.donation_type === 'monthly') {
+      copy.donation_type = 'monthly_contribution';
+    }
+    this.formData = copy;
     this.showFormModal.set(true);
   }
 
