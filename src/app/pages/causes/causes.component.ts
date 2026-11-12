@@ -13,8 +13,8 @@ import { Cause } from '../../core/models/models';
       <!-- Page Header -->
       <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mb-4 gap-3">
         <div>
-          <h2 class="h4 fw-bold mb-1" style="color: #0F3D63;">Causes & Programs</h2>
-          <p class="text-muted small mb-0">Manage community initiatives, target funding goals, and relief drives.</p>
+          <h2 class="h4 fw-bold mb-1" style="color: #0F3D63;">Our Causes</h2>
+          <p class="text-muted small mb-0">Small acts, when multiplied by millions of people, can transform the world.</p>
         </div>
         <div class="flex-shrink-0">
           <button class="btn btn-trust-primary btn-sm" (click)="openAddModal()">
@@ -59,18 +59,21 @@ import { Cause } from '../../core/models/models';
         </div>
       } @else {
         <div class="row g-4 mb-2">
-          @for (item of filteredCauses(); track item.id) {
+          @for (item of filteredCauses(); track item.id; let i = $index) {
             <div class="col-md-6 col-xl-4">
               <div class="admin-card h-100 d-flex flex-column overflow-hidden">
                 <!-- Cause Image -->
-                <div class="position-relative" style="height: 180px; background: #e2e8f0;">
+                <div class="position-relative" style="height: 190px; background: #e2e8f0;">
                   <img 
-                    [src]="item.image_url || 'https://ik.imagekit.io/baaidzoik/assets/gallery/AR_food_dist.png'" 
+                    [src]="item.image_url || 'https://ik.imagekit.io/baaidzoik/assets/causes/food_dist.png'" 
                     [alt]="item.title"
                     class="w-100 h-100 object-fit-cover"
                   >
                   <span class="badge position-absolute top-0 start-0 m-2" [ngClass]="item.status === 'active' ? 'bg-success' : 'bg-secondary'">
                     {{ item.status | uppercase }}
+                  </span>
+                  <span class="badge position-absolute bottom-0 end-0 m-2 font-monospace px-2.5 py-1 text-white shadow-sm" style="background: rgba(15, 61, 99, 0.88); font-size: 13px; font-weight: 700; border-radius: 6px; letter-spacing: 0.5px;">
+                    0{{ i + 1 }}
                   </span>
                   @if (item.featured) {
                     <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2">
@@ -266,7 +269,7 @@ export class CausesComponent implements OnInit {
       description: '',
       target_amount: 100000,
       raised_amount: 0,
-      image_url: 'https://ik.imagekit.io/baaidzoik/assets/gallery/AR_food_dist.png',
+      image_url: 'https://ik.imagekit.io/baaidzoik/assets/causes/food_dist.png',
       status: 'active',
       featured: false
     };
