@@ -63,11 +63,11 @@ export class ApiService {
     return this.http.get<any>(`${this.base}/causes/${id}`);
   }
 
-  createCause(formData: FormData): Observable<any> {
+  createCause(formData: FormData | any): Observable<any> {
     return this.http.post<any>(`${this.base}/causes`, formData);
   }
 
-  updateCause(id: number, formData: FormData): Observable<any> {
+  updateCause(id: number, formData: FormData | any): Observable<any> {
     return this.http.put<any>(`${this.base}/causes/${id}`, formData);
   }
 

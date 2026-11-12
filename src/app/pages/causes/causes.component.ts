@@ -126,7 +126,7 @@ import { Cause } from '../../core/models/models';
               <form (ngSubmit)="saveCause()">
                 <div class="mb-3">
                   <label class="form-label small fw-bold">Cause Title *</label>
-                  <input type="text" class="form-control" [(ngModel)]="formData.title" name="title" required>
+                  <input type="text" class="form-control" [(ngModel)]="formData.title" name="title" required placeholder="e.g. Monthly Ration Kit">
                 </div>
                 <div class="row g-2 mb-3">
                   <div class="col-6">
@@ -142,23 +142,103 @@ import { Cause } from '../../core/models/models';
                     </select>
                   </div>
                 </div>
-                <div class="row g-2 mb-3">
-                  <div class="col-6">
-                    <label class="form-label small fw-bold">Target Amount (₹)</label>
-                    <input type="number" class="form-control" [(ngModel)]="formData.target_amount" name="target_amount">
+
+                <!-- IMAGE SELECTION: LOCAL UPLOAD (to ImageKit /assets/causes/) or URL -->
+                <div class="mb-3 p-3 bg-light rounded border">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label class="form-label small fw-bold mb-0">
+                      <i class="bi bi-image me-1 text-primary"></i> Cause Photo (ImageKit: /assets/causes/)
+                    </label>
+                    <div class="btn-group btn-group-sm" role="group">
+                      <button 
+                        type="button" 
+                        class="btn" 
+                        [class.btn-primary]="imageSourceMode === 'upload'" 
+                        [class.btn-outline-secondary]="imageSourceMode !== 'upload'"
+                        (click)="imageSourceMode = 'upload'"
+                      >
+                        <i class="bi bi-cloud-arrow-up me-1"></i> Upload File
+                      </button>
+                      <button 
+                        type="button" 
+                        class="btn" 
+                        [class.btn-primary]="imageSourceMode === 'url'" 
+                        [class.btn-outline-secondary]="imageSourceMode !== 'url'"
+                        (click)="imageSourceMode = 'url'"
+                      >
+                        <i class="bi bi-link-45deg me-1"></i> Image URL
+                      </button>
+                    </div>
                   </div>
-                  <div class="col-6">
-                    <label class="form-label small fw-bold">Raised Amount (₹)</label>
-                    <input type="number" class="form-control" [(ngModel)]="formData.raised_amount" name="raised_amount">
-                  </div>
+
+                  @if (imageSourceMode === 'upload') {
+                    <div class="upload-dropzone text-center p-3 border border-2 border-dashed rounded bg-white">
+                      <input 
+                        type="file" 
+                        id="causeFileInput" 
+                        class="d-none" 
+                        accept="image/*"
+                        (change)="onFileSelected($event)"
+                        #fileInput
+                      >
+
+                      @if (filePreviewUrl) {
+                        <div class="preview-container position-relative d-inline-block">
+                          <img [src]="filePreviewUrl" alt="Upload preview" class="rounded shadow-sm mb-2" style="max-height: 140px; max-width: 100%; object-fit: cover;">
+                          <button 
+                            type="button" 
+                            class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1 rounded-circle p-1 lh-1"
+                            (click)="clearSelectedFile(fileInput)"
+                            title="Remove selected image"
+                          >
+                            <i class="bi bi-x-lg"></i>
+                          </button>
+                        </div>
+                        <div class="small text-muted">
+                          <strong>{{ selectedFileName || 'Selected Photo' }}</strong>
+                          @if (selectedFileSize) { <span> ({{ selectedFileSize }})</span> }
+                        </div>
+                        <div class="mt-2">
+                          <button type="button" class="btn btn-sm btn-outline-secondary" (click)="fileInput.click()">
+                            <i class="bi bi-arrow-repeat me-1"></i> Change File
+                          </button>
+                        </div>
+                      } @else {
+                        <div class="py-2 cursor-pointer" (click)="fileInput.click()">
+                          <i class="bi bi-cloud-arrow-up text-primary fs-2 d-block mb-1"></i>
+                          <div class="fw-semibold small">Click to choose photo from local computer</div>
+                          <div class="text-muted" style="font-size: 11px;">PNG, JPG, JPEG, WEBP up to 10MB</div>
+                        </div>
+                      }
+                    </div>
+                    <div class="form-text small text-muted mt-1">
+                      <i class="bi bi-shield-check text-success me-1"></i>
+                      Local photos will be automatically stored in <code>https://ik.imagekit.io/baaidzoik/assets/causes/</code>
+                    </div>
+                  } @else {
+                    <div>
+                      <input 
+                        type="url" 
+                        class="form-control" 
+                        [(ngModel)]="formData.image_url" 
+                        name="image_url" 
+                        placeholder="https://ik.imagekit.io/baaidzoik/assets/causes/..."
+                      >
+                      <div class="form-text small text-muted mt-1">
+                        Direct ImageKit link or hosted image URL.
+                      </div>
+                      @if (formData.image_url) {
+                        <div class="mt-2">
+                          <img [src]="formData.image_url" alt="Preview" class="rounded border" style="height: 90px; width: 140px; object-fit: cover;">
+                        </div>
+                      }
+                    </div>
+                  }
                 </div>
-                <div class="mb-3">
-                  <label class="form-label small fw-bold">Image URL or ImageKit link</label>
-                  <input type="text" class="form-control" [(ngModel)]="formData.image_url" name="image_url" placeholder="https://ik.imagekit.io/baaidzoik/assets/...">
-                </div>
+
                 <div class="mb-3">
                   <label class="form-label small fw-bold">Description *</label>
-                  <textarea class="form-control" rows="3" [(ngModel)]="formData.description" name="description" required></textarea>
+                  <textarea class="form-control" rows="3" [(ngModel)]="formData.description" name="description" required placeholder="Describe this charitable cause..."></textarea>
                 </div>
                 <div class="form-check mb-3">
                   <input class="form-check-input" type="checkbox" id="featuredCheck" [(ngModel)]="formData.featured" name="featured">
@@ -186,6 +266,16 @@ import { Cause } from '../../core/models/models';
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+    .cursor-pointer {
+      cursor: pointer;
+    }
+    .upload-dropzone {
+      transition: all 0.2s ease;
+    }
+    .upload-dropzone:hover {
+      background-color: #f8fafc !important;
+      border-color: #0F3D63 !important;
+    }
   `]
 })
 export class CausesComponent implements OnInit {
@@ -200,6 +290,13 @@ export class CausesComponent implements OnInit {
   showModal = signal(false);
   isEditing = signal(false);
   formData: any = {};
+
+  // Image Upload state
+  selectedFile: File | null = null;
+  selectedFileName = '';
+  selectedFileSize = '';
+  filePreviewUrl: string | null = null;
+  imageSourceMode: 'upload' | 'url' = 'upload';
 
   constructor(private apiService: ApiService) {}
 
@@ -239,21 +336,43 @@ export class CausesComponent implements OnInit {
     this.filterCauses();
   }
 
-  getProgress(item: Cause): number {
-    if (!item.target_amount || item.target_amount <= 0) return 100;
-    const pct = (item.raised_amount / item.target_amount) * 100;
-    return Math.min(100, Math.max(0, pct));
+  onFileSelected(event: any): void {
+    const file = event.target.files?.[0];
+    if (file) {
+      this.selectedFile = file;
+      this.selectedFileName = file.name;
+      this.selectedFileSize = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.filePreviewUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  clearSelectedFile(inputElem?: HTMLInputElement): void {
+    this.selectedFile = null;
+    this.selectedFileName = '';
+    this.selectedFileSize = '';
+    this.filePreviewUrl = null;
+    if (inputElem) {
+      inputElem.value = '';
+    }
   }
 
   openAddModal(): void {
     this.isEditing.set(false);
+    this.selectedFile = null;
+    this.selectedFileName = '';
+    this.selectedFileSize = '';
+    this.filePreviewUrl = null;
+    this.imageSourceMode = 'upload';
     this.formData = {
       title: '',
       category: 'Community Relief',
       description: '',
-      target_amount: 100000,
-      raised_amount: 0,
-      image_url: 'https://ik.imagekit.io/baaidzoik/assets/causes/food_dist.png',
+      image_url: '',
       status: 'active',
       featured: false
     };
@@ -262,29 +381,60 @@ export class CausesComponent implements OnInit {
 
   openEditModal(item: Cause): void {
     this.isEditing.set(true);
+    this.selectedFile = null;
+    this.selectedFileName = '';
+    this.selectedFileSize = '';
+    this.filePreviewUrl = item.image_url || null;
+    this.imageSourceMode = item.image_url ? 'url' : 'upload';
     this.formData = { ...item };
     this.showModal.set(true);
   }
 
   saveCause(): void {
+    if (!this.formData.title || !this.formData.category || !this.formData.description) {
+      alert('Please fill in Title, Category, and Description.');
+      return;
+    }
+
     this.isSubmitting.set(true);
+
+    const fd = new FormData();
+    fd.append('title', this.formData.title);
+    fd.append('category', this.formData.category);
+    fd.append('description', this.formData.description);
+    fd.append('status', this.formData.status || 'active');
+    fd.append('featured', this.formData.featured ? '1' : '0');
+    fd.append('folder', '/assets/causes');
+
+    if (this.imageSourceMode === 'upload' && this.selectedFile) {
+      fd.append('image', this.selectedFile);
+    } else if (this.formData.image_url) {
+      fd.append('image_url', this.formData.image_url);
+    }
+
     if (this.isEditing()) {
-      this.apiService.updateCause(this.formData.id, this.formData).subscribe({
+      this.apiService.updateCause(this.formData.id, fd).subscribe({
         next: () => {
           this.isSubmitting.set(false);
           this.showModal.set(false);
           this.loadCauses();
         },
-        error: () => this.isSubmitting.set(false)
+        error: (err) => {
+          this.isSubmitting.set(false);
+          alert('Failed to update cause: ' + (err.error?.message || err.message));
+        }
       });
     } else {
-      this.apiService.createCause(this.formData).subscribe({
+      this.apiService.createCause(fd).subscribe({
         next: () => {
           this.isSubmitting.set(false);
           this.showModal.set(false);
           this.loadCauses();
         },
-        error: () => this.isSubmitting.set(false)
+        error: (err) => {
+          this.isSubmitting.set(false);
+          alert('Failed to create cause: ' + (err.error?.message || err.message));
+        }
       });
     }
   }
