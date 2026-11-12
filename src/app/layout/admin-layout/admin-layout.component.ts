@@ -146,8 +146,7 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
                   {{ getDisplayName().charAt(0).toUpperCase() }}
                 </div>
                 <div class="d-none d-lg-block text-start">
-                  <div class="fw-bold small lh-1 mb-1">{{ getDisplayName() }}</div>
-                  <span class="badge bg-light text-dark border small py-0 px-1">{{ authService.currentUser()?.role || 'admin' }}</span>
+                  <div class="fw-bold small text-dark">{{ getDisplayName() }}</div>
                 </div>
               </div>
               <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
