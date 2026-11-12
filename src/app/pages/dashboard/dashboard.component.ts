@@ -145,61 +145,70 @@ import { DashboardStats, Donation } from '../../core/models/models';
 
         <!-- Main Dashboard Split View -->
         <div class="row g-4 mb-4">
-          <!-- Recent Donations Table -->
+          <!-- Recent Donations Table (Recent 5 with Scroll Support) -->
           <div class="col-lg-8">
             <div class="admin-card">
               <div class="card-header-clean">
-                <h5 class="card-title-clean">
-                  <i class="bi bi-clock-history text-primary"></i> Recent Donations
-                </h5>
+                <div class="d-flex align-items-center gap-2">
+                  <h5 class="card-title-clean mb-0">
+                    <i class="bi bi-clock-history text-primary"></i> Recent Donations
+                  </h5>
+                  <span class="badge bg-light text-secondary border font-monospace" style="font-size: 11px;">Recent 5</span>
+                </div>
                 <a routerLink="/donations" class="btn btn-sm btn-link text-decoration-none">View All</a>
               </div>
-              <div class="table-responsive">
-                <table class="table admin-table mb-0" style="min-width: 580px;">
-                  <thead>
+              <div class="table-responsive" style="max-height: 380px; overflow-y: auto;">
+                <table class="table admin-table mb-0 align-middle">
+                  <thead class="sticky-top bg-light">
                     <tr>
-                      <th>Donor</th>
-                      <th>Type</th>
-                      <th>Amount</th>
-                      <th>Method</th>
-                      <th>Status</th>
-                      <th>Date</th>
+                      <th style="min-width: 100px;">Receipt #</th>
+                      <th style="min-width: 130px;">Donor</th>
+                      <th style="min-width: 80px;">Type</th>
+                      <th style="min-width: 90px;">Amount</th>
+                      <th style="min-width: 70px;">Method</th>
+                      <th style="min-width: 80px;">Status</th>
+                      <th style="min-width: 85px;">Date</th>
                     </tr>
                   </thead>
                   <tbody>
-                    @for (item of recentDonations(); track item.id) {
+                    @for (item of recentDonations().slice(0, 5); track item.id) {
                       <tr>
                         <td>
-                          <div class="fw-semibold text-dark">{{ item.donor_name }}</div>
-                          <div class="small text-muted">{{ item.donor_phone }}</div>
+                          <span class="badge bg-light text-dark border font-monospace px-1.5 py-0.5" style="font-size: 11px;">
+                            {{ formatReceiptNo(item) }}
+                          </span>
+                        </td>
+                        <td>
+                          <div class="fw-semibold text-dark text-truncate" style="max-width: 135px;" [title]="item.donor_name">{{ item.donor_name }}</div>
+                          <div class="small text-muted font-monospace" style="font-size: 11px;">{{ item.donor_phone }}</div>
                         </td>
                         <td>
                           <span class="badge" [ngClass]="{
                             'bg-success': item.donation_type === 'zakat' || item.donation_type === 'zakath',
                             'bg-primary': item.donation_type === 'sadaqah',
                             'bg-info text-dark': item.donation_type === 'monthly_donation'
-                          }">
+                          }" style="font-size: 10px; padding: 2.5px 5.5px;">
                             {{ item.donation_type === 'monthly_donation' ? 'MONTHLY' : (item.donation_type === 'zakat' ? 'ZAKATH' : (item.donation_type | uppercase)) }}
                           </span>
                         </td>
-                        <td class="fw-bold text-dark">₹{{ item.amount | number:'1.2-2' }}</td>
+                        <td class="fw-bold text-dark text-nowrap">₹{{ item.amount | number:'1.2-2' }}</td>
                         <td>
-                          <span class="text-uppercase small fw-semibold text-secondary">{{ item.payment_method }}</span>
+                          <span class="badge bg-secondary text-uppercase" style="font-size: 10px; padding: 2.5px 5px;">{{ item.payment_method }}</span>
                         </td>
                         <td>
                           <span class="badge" [ngClass]="{
                             'badge-soft-success': item.status === 'verified' || item.status === 'completed',
                             'badge-soft-warning': item.status === 'pending',
                             'badge-soft-danger': item.status === 'failed'
-                          }">
+                          }" style="font-size: 10px; padding: 2.5px 5.5px;">
                             {{ item.status }}
                           </span>
                         </td>
-                        <td class="small text-muted">{{ item.created_at | date:'shortDate' }}</td>
+                        <td class="small text-muted text-nowrap" style="font-size: 11.5px;">{{ item.created_at | date:'shortDate' }}</td>
                       </tr>
                     } @empty {
                       <tr>
-                        <td colspan="6" class="text-center py-4 text-muted">No donations recorded yet.</td>
+                        <td colspan="7" class="text-center py-4 text-muted">No donations recorded yet.</td>
                       </tr>
                     }
                   </tbody>
@@ -208,36 +217,8 @@ import { DashboardStats, Donation } from '../../core/models/models';
             </div>
           </div>
 
-          <!-- Quick Actions & Donation Types Breakdown -->
+          <!-- Quick Navigation Hub -->
           <div class="col-lg-4">
-            <!-- Donation Breakdown Card -->
-            <div class="admin-card mb-4">
-              <div class="card-header-clean">
-                <h5 class="card-title-clean">
-                  <i class="bi bi-pie-chart-fill text-success"></i> Fund Distribution
-                </h5>
-              </div>
-              <div class="p-3">
-                @for (tb of typeBreakdown(); track tb.donation_type) {
-                  <div class="mb-3">
-                    <div class="d-flex justify-content-between small fw-semibold mb-1">
-                      <span class="text-capitalize">{{ tb.donation_type }} ({{ tb.count }})</span>
-                      <span class="text-dark">₹{{ tb.total_amount | number:'1.0-0' }}</span>
-                    </div>
-                    <div class="progress" style="height: 6px;">
-                      <div 
-                        class="progress-bar" 
-                        role="progressbar" 
-                        [style.width.%]="stats()?.totalDonationsAmount ? (tb.total_amount / (stats()?.totalDonationsAmount || 1) * 100) : 0"
-                        [ngClass]="tb.donation_type === 'zakat' ? 'bg-success' : 'bg-primary'"
-                      ></div>
-                    </div>
-                  </div>
-                }
-              </div>
-            </div>
-
-            <!-- Quick Navigation Hub -->
             <div class="admin-card">
               <div class="card-header-clean">
                 <h5 class="card-title-clean">
@@ -279,6 +260,17 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadDashboard();
+  }
+
+  formatReceiptNo(d: any): string {
+    if (!d) return 'ART20260001';
+    if (d.receipt_number) {
+      return String(d.receipt_number).replace(/^ART-(\d{4})-?(\d+)/i, (_match: string, y: string, seq: string) => {
+        return `ART${y}${seq.padStart(4, '0')}`;
+      });
+    }
+    const year = new Date().getFullYear();
+    return `ART${year}${String(d.id || 1).padStart(4, '0')}`;
   }
 
   loadDashboard(): void {
