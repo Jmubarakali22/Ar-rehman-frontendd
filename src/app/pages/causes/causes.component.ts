@@ -247,9 +247,14 @@ import { Cause } from '../../core/models/models';
                   </label>
                 </div>
                 <div class="d-flex justify-content-end gap-2 mt-4">
-                  <button type="button" class="btn btn-light" (click)="showModal.set(false)">Cancel</button>
+                  <button type="button" class="btn btn-light" (click)="showModal.set(false)" [disabled]="isSubmitting()">Cancel</button>
                   <button type="submit" class="btn btn-trust-primary" [disabled]="isSubmitting()">
-                    {{ isSubmitting() ? 'Saving...' : 'Save Cause' }}
+                    @if (isSubmitting()) {
+                      <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                      <span>{{ uploadingStatus || 'Saving...' }}</span>
+                    } @else {
+                      <span>Save Cause</span>
+                    }
                   </button>
                 </div>
               </form>
@@ -281,6 +286,7 @@ import { Cause } from '../../core/models/models';
 export class CausesComponent implements OnInit {
   isLoading = signal(true);
   isSubmitting = signal(false);
+  uploadingStatus = '';
   causes = signal<Cause[]>([]);
   filteredCauses = signal<Cause[]>([]);
 
@@ -390,52 +396,93 @@ export class CausesComponent implements OnInit {
     this.showModal.set(true);
   }
 
-  saveCause(): void {
+  async saveCause(): Promise<void> {
     if (!this.formData.title || !this.formData.category || !this.formData.description) {
       alert('Please fill in Title, Category, and Description.');
       return;
     }
 
     this.isSubmitting.set(true);
+    this.uploadingStatus = 'Uploading photo to ImageKit...';
 
-    const fd = new FormData();
-    fd.append('title', this.formData.title);
-    fd.append('category', this.formData.category);
-    fd.append('description', this.formData.description);
-    fd.append('status', this.formData.status || 'active');
-    fd.append('featured', this.formData.featured ? '1' : '0');
-    fd.append('folder', '/assets/causes');
+    try {
+      let finalImageUrl = this.formData.image_url || 'https://ik.imagekit.io/baaidzoik/assets/causes/food_dist.png';
 
-    if (this.imageSourceMode === 'upload' && this.selectedFile) {
-      fd.append('image', this.selectedFile);
-    } else if (this.formData.image_url) {
-      fd.append('image_url', this.formData.image_url);
-    }
+      // 1. If user selected a local file, upload directly to ImageKit (/assets/causes/)
+      if (this.imageSourceMode === 'upload' && this.selectedFile) {
+        try {
+          const ikFormData = new FormData();
+          ikFormData.append('file', this.selectedFile);
+          ikFormData.append('fileName', this.selectedFile.name);
+          ikFormData.append('folder', '/assets/causes');
+          ikFormData.append('useUniqueFileName', 'false');
 
-    if (this.isEditing()) {
-      this.apiService.updateCause(this.formData.id, fd).subscribe({
-        next: () => {
-          this.isSubmitting.set(false);
-          this.showModal.set(false);
-          this.loadCauses();
-        },
-        error: (err) => {
-          this.isSubmitting.set(false);
-          alert('Failed to update cause: ' + (err.error?.message || err.message));
+          const ikRes = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+            method: 'POST',
+            headers: {
+              'Authorization': 'Basic cHJpdmF0ZV9yVW13SmMzeFp3NzVVUjFtL3VSTEZ2dkVzMEU9Og=='
+            },
+            body: ikFormData
+          });
+
+          if (ikRes.ok) {
+            const ikData = await ikRes.json();
+            if (ikData.url) {
+              finalImageUrl = ikData.url;
+            }
+          } else {
+            console.warn('ImageKit direct upload response not ok:', await ikRes.text());
+          }
+        } catch (ikErr) {
+          console.warn('Direct ImageKit upload failed:', ikErr);
         }
-      });
-    } else {
-      this.apiService.createCause(fd).subscribe({
-        next: () => {
-          this.isSubmitting.set(false);
-          this.showModal.set(false);
-          this.loadCauses();
-        },
-        error: (err) => {
-          this.isSubmitting.set(false);
-          alert('Failed to create cause: ' + (err.error?.message || err.message));
-        }
-      });
+      }
+
+      this.uploadingStatus = 'Saving cause details...';
+
+      // 2. Prepare payload for API
+      const payload: any = {
+        title: this.formData.title,
+        category: this.formData.category,
+        description: this.formData.description,
+        status: this.formData.status || 'active',
+        featured: this.formData.featured ? 1 : 0,
+        image_url: finalImageUrl
+      };
+
+      if (this.isEditing()) {
+        this.apiService.updateCause(this.formData.id, payload).subscribe({
+          next: () => {
+            this.isSubmitting.set(false);
+            this.uploadingStatus = '';
+            this.showModal.set(false);
+            this.loadCauses();
+          },
+          error: (err) => {
+            this.isSubmitting.set(false);
+            this.uploadingStatus = '';
+            alert('Failed to update cause: ' + (err.error?.message || err.message));
+          }
+        });
+      } else {
+        this.apiService.createCause(payload).subscribe({
+          next: () => {
+            this.isSubmitting.set(false);
+            this.uploadingStatus = '';
+            this.showModal.set(false);
+            this.loadCauses();
+          },
+          error: (err) => {
+            this.isSubmitting.set(false);
+            this.uploadingStatus = '';
+            alert('Failed to create cause: ' + (err.error?.message || err.message));
+          }
+        });
+      }
+    } catch (err: any) {
+      this.isSubmitting.set(false);
+      this.uploadingStatus = '';
+      alert('Error saving cause: ' + (err.message || err));
     }
   }
 
