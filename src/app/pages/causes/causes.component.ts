@@ -95,7 +95,7 @@ import { Cause } from '../../core/models/models';
                     <button class="btn btn-sm btn-outline-primary" (click)="openEditModal(item)">
                       <i class="bi bi-pencil me-1"></i> Edit
                     </button>
-                    <button class="btn btn-sm btn-outline-danger" (click)="deleteCause(item.id)">
+                    <button class="btn btn-sm btn-outline-danger" (click)="confirmDeleteCause(item)" title="Delete Cause">
                       <i class="bi bi-trash me-1"></i> Delete
                     </button>
                   </div>
@@ -263,6 +263,56 @@ import { Cause } from '../../core/models/models';
         </div>
       </div>
     }
+
+    <!-- CONFIRM DELETE MODAL POPUP -->
+    @if (showDeleteModal()) {
+      <div class="modal fade show d-block" style="background: rgba(0,0,0,0.55); z-index: 1060;" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+          <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-body p-4 text-center">
+              <!-- Warning Trash Icon -->
+              <div class="mb-3 d-inline-flex align-items-center justify-content-center rounded-circle" style="width: 64px; height: 64px; background-color: #fee2e2;">
+                <i class="bi bi-trash3-fill text-danger fs-2"></i>
+              </div>
+
+              <!-- Header & Text -->
+              <h5 class="fw-bold text-dark mb-1">Delete Cause?</h5>
+              <p class="text-muted small mb-3">
+                Are you sure you want to delete this cause? This action cannot be undone.
+              </p>
+
+              <!-- Target Cause Preview Card -->
+              @if (causeToDelete) {
+                <div class="p-2.5 bg-light rounded-3 text-start mb-3 border d-flex align-items-center gap-3">
+                  @if (causeToDelete.image_url) {
+                    <img [src]="causeToDelete.image_url" alt="" class="rounded object-fit-cover border flex-shrink-0" style="width: 48px; height: 48px;">
+                  }
+                  <div class="flex-grow-1 overflow-hidden">
+                    <span class="badge bg-secondary-subtle text-secondary small mb-1" style="font-size: 10px;">{{ causeToDelete.category }}</span>
+                    <div class="fw-bold text-truncate text-dark" style="font-size: 13px;">{{ causeToDelete.title }}</div>
+                  </div>
+                </div>
+              }
+
+              <!-- Actions -->
+              <div class="d-flex justify-content-center gap-2 pt-2">
+                <button type="button" class="btn btn-light px-4" (click)="cancelDelete()" [disabled]="isDeleting()">
+                  Cancel
+                </button>
+                <button type="button" class="btn btn-danger px-4" (click)="executeDelete()" [disabled]="isDeleting()">
+                  @if (isDeleting()) {
+                    <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                    <span>Deleting...</span>
+                  } @else {
+                    <i class="bi bi-trash me-1"></i> Yes, Delete
+                  }
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
   `,
   styles: [`
     .text-truncate-3 {
@@ -295,6 +345,11 @@ export class CausesComponent implements OnInit {
   showModal = signal(false);
   isEditing = signal(false);
   formData: any = {};
+
+  // Delete modal confirmation state
+  showDeleteModal = signal(false);
+  isDeleting = signal(false);
+  causeToDelete: Cause | null = null;
 
   // Image Upload state
   selectedFile: File | null = null;
@@ -444,11 +499,37 @@ export class CausesComponent implements OnInit {
     }
   }
 
+  confirmDeleteCause(item: Cause): void {
+    this.causeToDelete = item;
+    this.showDeleteModal.set(true);
+  }
+
+  cancelDelete(): void {
+    this.causeToDelete = null;
+    this.showDeleteModal.set(false);
+  }
+
+  executeDelete(): void {
+    if (!this.causeToDelete) return;
+    this.isDeleting.set(true);
+    this.apiService.deleteCause(this.causeToDelete.id).subscribe({
+      next: () => {
+        this.isDeleting.set(false);
+        this.showDeleteModal.set(false);
+        this.causeToDelete = null;
+        this.loadCauses();
+      },
+      error: (err) => {
+        this.isDeleting.set(false);
+        alert('Failed to delete cause: ' + (err.error?.message || err.message));
+      }
+    });
+  }
+
   deleteCause(id: number): void {
-    if (confirm('Are you sure you want to delete this cause?')) {
-      this.apiService.deleteCause(id).subscribe({
-        next: () => this.loadCauses()
-      });
+    const item = this.causes().find(c => c.id === id);
+    if (item) {
+      this.confirmDeleteCause(item);
     }
   }
 }
