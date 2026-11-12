@@ -165,17 +165,14 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
           <router-outlet></router-outlet>
         </main>
 
-        <!-- Admin Page Footer (Aligned with Navigation Bar / Sidebar Footer) -->
+        <!-- Admin Page Footer -->
         <footer class="admin-page-footer px-3 px-md-4 py-2 bg-white border-top d-flex flex-wrap align-items-center justify-content-between">
-          <div class="d-flex align-items-center gap-2">
+          <div class="d-flex align-items-center gap-2 small text-muted" style="font-size: 12px;">
             <span class="status-indicator online"></span>
-            <span class="small text-muted" style="font-size: 12px;">
-              Charity Reg. No. <strong class="text-dark">04/16/2020</strong> &bull; Pernambut, Vellore Dist.
-            </span>
+            <span>&copy; {{ currentYear }} Ar Rahman Trust. All rights reserved.</span>
           </div>
-          <div class="d-flex align-items-center gap-3 small text-muted" style="font-size: 12px;">
-            <span class="d-none d-md-inline">Ar Rahman Trust &bull; Charity Operations</span>
-            <span class="text-secondary">&copy; {{ currentYear }} All rights reserved</span>
+          <div class="small text-muted" style="font-size: 12px;">
+            Registered Charity No.04/16/2020
           </div>
         </footer>
 
