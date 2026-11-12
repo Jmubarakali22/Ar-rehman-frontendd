@@ -80,16 +80,16 @@ import { DashboardStats, Donation } from '../../core/models/models';
             </div>
           </div>
 
-          <!-- Active Causes -->
+          <!-- Monthly Contribution -->
           <div class="col-sm-6 col-xl-3">
             <div class="stat-card">
-              <div class="stat-icon-wrapper" style="background: #f3e8ff; color: #9333ea;">
-                <i class="bi bi-diagram-3-fill"></i>
+              <div class="stat-icon-wrapper" style="background: #e0f2fe; color: #0284c7;">
+                <i class="bi bi-calendar-check-fill"></i>
               </div>
               <div>
-                <div class="stat-label">Active Causes</div>
-                <div class="stat-value" style="color: #9333ea;">{{ stats()?.activeCauses }} / {{ stats()?.totalCauses }}</div>
-                <div class="small text-muted mt-1">₹{{ stats()?.totalRaised | number:'1.0-0' }} raised</div>
+                <div class="stat-label">Monthly Contribution</div>
+                <div class="stat-value" style="color: #0284c7;">₹{{ getMonthlyContribution() | number:'1.0-0' }}</div>
+                <div class="small text-muted mt-1">{{ getMonthlyDonorsCount() }} regular contributions</div>
               </div>
             </div>
           </div>
@@ -294,6 +294,32 @@ export class DashboardComponent implements OnInit {
     }
     const year = new Date().getFullYear();
     return `ART${year}${String(d.id || 1).padStart(4, '0')}`;
+  }
+
+  getMonthlyContribution(): number {
+    const s = this.stats();
+    if (s && s.totalMonthly !== undefined && s.totalMonthly !== null) {
+      return s.totalMonthly;
+    }
+    const item = this.typeBreakdown().find(t => 
+      t.donation_type === 'monthly_donation' || 
+      t.donation_type === 'monthly' || 
+      t.donation_type === 'monthly_contribution'
+    );
+    return item ? parseFloat(item.total_amount || 0) : 0;
+  }
+
+  getMonthlyDonorsCount(): number {
+    const s = this.stats();
+    if (s && s.totalMonthlyCount !== undefined && s.totalMonthlyCount !== null) {
+      return s.totalMonthlyCount;
+    }
+    const item = this.typeBreakdown().find(t => 
+      t.donation_type === 'monthly_donation' || 
+      t.donation_type === 'monthly' || 
+      t.donation_type === 'monthly_contribution'
+    );
+    return item ? parseInt(item.count || 0, 10) : 0;
   }
 
   loadDashboard(): void {

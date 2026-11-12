@@ -77,6 +77,8 @@ export interface DashboardStats {
   totalDonationsCount: number;
   totalZakat: number;
   totalSadaqah: number;
+  totalMonthly?: number;
+  totalMonthlyCount?: number;
   pendingDonationsCount: number;
   totalCauses: number;
   activeCauses: number;
