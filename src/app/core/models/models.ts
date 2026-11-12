@@ -14,7 +14,7 @@ export interface Donation {
   donor_email?: string;
   donor_phone: string;
   amount: number;
-  donation_type: 'zakat' | 'sadaqah' | 'general' | 'education' | 'medical' | 'ration';
+  donation_type: 'zakat' | 'sadaqah' | 'monthly_donation' | string;
   payment_method: 'upi' | 'bank_transfer' | 'cash' | 'card';
   transaction_id?: string;
   status: 'completed' | 'pending' | 'verified' | 'failed';

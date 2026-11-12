@@ -59,12 +59,9 @@ import { Donation } from '../../core/models/models';
           <div class="col-6 col-md-3">
             <select class="form-select" [(ngModel)]="selectedType" (change)="loadDonations()">
               <option value="">All Donation Types</option>
-              <option value="zakat">Zakat</option>
               <option value="sadaqah">Sadaqah</option>
-              <option value="education">Education Support</option>
-              <option value="medical">Medical Relief</option>
-              <option value="ration">Ration / Food</option>
-              <option value="general">General Aid</option>
+              <option value="zakat">Zakath</option>
+              <option value="monthly_donation">Monthly Donation</option>
             </select>
           </div>
           <div class="col-6 col-md-3">
@@ -154,7 +151,7 @@ import { Donation } from '../../core/models/models';
                       >
                     </td>
                     <td>
-                      <span class="badge bg-light text-dark border font-monospace px-1.5 py-0.5" style="font-size: 11px;">{{ item.receipt_number || ('ART-' + item.id) }}</span>
+                      <span class="badge bg-light text-dark border font-monospace px-1.5 py-0.5" style="font-size: 11px;">{{ formatReceiptNo(item) }}</span>
                     </td>
                     <td>
                       <div class="fw-bold text-dark text-truncate" style="max-width: 125px;" [title]="item.donor_name">{{ item.donor_name }}</div>
@@ -167,8 +164,12 @@ import { Donation } from '../../core/models/models';
                       <div class="fw-bold text-dark text-nowrap" style="font-size: 0.9rem;">₹{{ item.amount | number:'1.2-2' }}</div>
                     </td>
                     <td>
-                      <span class="badge" [ngClass]="item.donation_type === 'zakat' ? 'bg-success' : 'bg-primary'" style="font-size: 10px; padding: 2.5px 5.5px;">
-                        {{ item.donation_type | uppercase }}
+                      <span class="badge" [ngClass]="{
+                        'bg-success': item.donation_type === 'zakat' || item.donation_type === 'zakath',
+                        'bg-primary': item.donation_type === 'sadaqah',
+                        'bg-info text-dark': item.donation_type === 'monthly_donation'
+                      }" style="font-size: 10px; padding: 2.5px 5.5px;">
+                        {{ item.donation_type === 'monthly_donation' ? 'MONTHLY' : (item.donation_type === 'zakat' ? 'ZAKATH' : (item.donation_type | uppercase)) }}
                       </span>
                     </td>
                     <td>
@@ -283,12 +284,9 @@ import { Donation } from '../../core/models/models';
                   <div class="col-12 col-sm-6">
                     <label class="form-label small fw-bold">Donation Purpose *</label>
                     <select class="form-select" [(ngModel)]="formData.donation_type" name="donation_type">
-                      <option value="zakat">Zakat</option>
                       <option value="sadaqah">Sadaqah</option>
-                      <option value="education">Education Support</option>
-                      <option value="medical">Medical Relief</option>
-                      <option value="ration">Ration / Food</option>
-                      <option value="general">General Donation</option>
+                      <option value="zakat">Zakath</option>
+                      <option value="monthly_donation">Monthly Donation</option>
                     </select>
                   </div>
                 </div>
@@ -377,7 +375,7 @@ import { Donation } from '../../core/models/models';
                 <div class="row g-2 mb-3 p-2 rounded-2" style="background: #f8fafc; font-size: 13px; border: 1px solid #e2e8f0;">
                   <div class="col-12 col-sm-4 text-center text-sm-start mb-1 mb-sm-0">
                     <span class="text-muted" style="font-size: 11px;">Receipt Number:</span><br>
-                    <strong class="font-monospace text-primary fs-6">{{ activeReceipt?.receipt_number || ('ART-' + activeReceipt?.id) }}</strong>
+                    <strong class="font-monospace text-primary fs-6">{{ formatReceiptNo(activeReceipt) }}</strong>
                   </div>
                   <div class="col-12 col-sm-4 text-center mb-1 mb-sm-0">
                     <span class="text-muted" style="font-size: 11px;">Date of Contribution:</span><br>
@@ -402,8 +400,12 @@ import { Donation } from '../../core/models/models';
                     </div>
                     <div class="col-12 col-sm-5 text-center text-sm-end mt-2 mt-sm-0">
                       <div class="small text-muted text-uppercase fw-bold" style="font-size: 11px; letter-spacing: 0.5px;">Contribution Purpose:</div>
-                      <span class="badge text-uppercase fs-6 px-3 py-1 mt-1" [ngClass]="activeReceipt?.donation_type === 'zakat' ? 'bg-success' : 'bg-primary'">
-                        {{ activeReceipt?.donation_type }} Donation
+                      <span class="badge text-uppercase fs-6 px-3 py-1 mt-1" [ngClass]="{
+                        'bg-success': activeReceipt?.donation_type === 'zakat' || activeReceipt?.donation_type === 'zakath',
+                        'bg-primary': activeReceipt?.donation_type === 'sadaqah',
+                        'bg-info text-dark': activeReceipt?.donation_type === 'monthly_donation'
+                      }">
+                        {{ activeReceipt?.donation_type === 'monthly_donation' ? 'Monthly Donation' : ((activeReceipt?.donation_type === 'zakat' ? 'Zakath' : activeReceipt?.donation_type) + ' Donation') }}
                       </span>
                       <div class="small text-muted mt-2">Mode: <strong class="text-uppercase text-dark">{{ activeReceipt?.payment_method }}</strong></div>
                       <div class="small font-monospace text-muted">Ref/UTR: {{ activeReceipt?.transaction_id || 'N/A' }}</div>
@@ -503,7 +505,7 @@ import { Donation } from '../../core/models/models';
             <div class="row g-2 mb-2 p-2 rounded-2" style="background: #f8fafc; font-size: 12.5px; border: 1px solid #e2e8f0;">
               <div class="col-4">
                 <span class="text-muted" style="font-size: 10.5px;">Receipt Number:</span><br>
-                <strong class="font-monospace text-primary fs-6">{{ activeReceipt?.receipt_number || ('ART-' + activeReceipt?.id) }}</strong>
+                <strong class="font-monospace text-primary fs-6">{{ formatReceiptNo(activeReceipt) }}</strong>
               </div>
               <div class="col-4 text-center">
                 <span class="text-muted" style="font-size: 10.5px;">Date of Contribution:</span><br>
@@ -528,8 +530,12 @@ import { Donation } from '../../core/models/models';
                 </div>
                 <div class="col-5 text-end">
                   <div class="small text-muted text-uppercase fw-bold" style="font-size: 10px; letter-spacing: 0.5px;">Contribution Purpose:</div>
-                  <span class="badge text-uppercase fs-6 px-3 py-1 mt-1" [ngClass]="activeReceipt?.donation_type === 'zakat' ? 'bg-success' : 'bg-primary'">
-                    {{ activeReceipt?.donation_type }} Donation
+                  <span class="badge text-uppercase fs-6 px-3 py-1 mt-1" [ngClass]="{
+                    'bg-success': activeReceipt?.donation_type === 'zakat' || activeReceipt?.donation_type === 'zakath',
+                    'bg-primary': activeReceipt?.donation_type === 'sadaqah',
+                    'bg-info text-dark': activeReceipt?.donation_type === 'monthly_donation'
+                  }">
+                    {{ activeReceipt?.donation_type === 'monthly_donation' ? 'Monthly Donation' : ((activeReceipt?.donation_type === 'zakat' ? 'Zakath' : activeReceipt?.donation_type) + ' Donation') }}
                   </span>
                   <div class="small text-muted mt-2">Mode: <strong class="text-uppercase text-dark">{{ activeReceipt?.payment_method }}</strong></div>
                   <div class="small font-monospace text-muted">Ref/UTR: {{ activeReceipt?.transaction_id || 'N/A' }}</div>
@@ -605,8 +611,8 @@ import { Donation } from '../../core/models/models';
               <!-- Summary Card -->
               <div class="p-3 bg-light rounded-3 mb-3 border">
                 <div class="d-flex justify-content-between align-items-center mb-1">
-                  <span class="badge bg-secondary font-monospace">{{ selectedWhatsAppDonation?.receipt_number || ('ART-' + selectedWhatsAppDonation?.id) }}</span>
-                  <span class="badge bg-success text-uppercase">{{ selectedWhatsAppDonation?.donation_type }}</span>
+                  <span class="badge bg-secondary font-monospace">{{ formatReceiptNo(selectedWhatsAppDonation) }}</span>
+                  <span class="badge bg-success text-uppercase">{{ selectedWhatsAppDonation?.donation_type === 'monthly_donation' ? 'MONTHLY DONATION' : (selectedWhatsAppDonation?.donation_type === 'zakat' ? 'ZAKATH' : selectedWhatsAppDonation?.donation_type) }}</span>
                 </div>
                 <div class="fw-bold text-dark fs-5">{{ selectedWhatsAppDonation?.donor_name }}</div>
                 <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
@@ -1231,12 +1237,23 @@ Jazakallahu Khairan for your continuous benevolence and trust.
     return inWords(integerPart) + ' Rupees Only';
   }
 
+  formatReceiptNo(d: any): string {
+    if (!d) return 'ART20260001';
+    if (d.receipt_number) {
+      return String(d.receipt_number).replace(/^ART-(\d{4})-?(\d+)/i, (_match: string, y: string, seq: string) => {
+        return `ART${y}${seq.padStart(4, '0')}`;
+      });
+    }
+    const year = new Date().getFullYear();
+    return `ART${year}${String(d.id || 1).padStart(4, '0')}`;
+  }
+
   downloadReceiptPDF(donation: Donation | null): void {
     if (!donation) return;
     this.activeReceipt = donation;
     this.isGeneratingPdf.set(true);
 
-    const receiptNo = donation.receipt_number || ('ART-' + donation.id);
+    const receiptNo = this.formatReceiptNo(donation);
     const fileName = `Ar_Rahman_Trust_Receipt_${receiptNo}.pdf`;
 
     setTimeout(() => {
@@ -1352,7 +1369,7 @@ Jazakallahu Khairan for your continuous benevolence and trust.
     this.directSendError.set(null);
     this.directSendSuccess.set(null);
 
-    const receiptNo = donation.receipt_number || ('ART-' + donation.id);
+    const receiptNo = this.formatReceiptNo(donation);
     const fileName = `Ar_Rahman_Trust_Receipt_${receiptNo}.pdf`;
     const element = document.getElementById('printableReceiptA4') || document.getElementById('printableReceiptModal');
     const win = window as any;
@@ -1549,7 +1566,7 @@ Jazakallahu Khairan for your continuous benevolence and trust.
 
     const headers = ['Receipt No', 'Donor Name', 'Phone', 'Email', 'Amount', 'Type', 'Method', 'Transaction ID', 'Status', 'Date'];
     const rows = data.map(d => [
-      `"${d.receipt_number || d.id}"`,
+      `"${this.formatReceiptNo(d)}"`,
       `"${d.donor_name}"`,
       `"${d.donor_phone}"`,
       `"${d.donor_email || ''}"`,

@@ -174,8 +174,12 @@ import { DashboardStats, Donation } from '../../core/models/models';
                           <div class="small text-muted">{{ item.donor_phone }}</div>
                         </td>
                         <td>
-                          <span class="badge" [ngClass]="item.donation_type === 'zakat' ? 'bg-success' : 'bg-primary'">
-                            {{ item.donation_type | uppercase }}
+                          <span class="badge" [ngClass]="{
+                            'bg-success': item.donation_type === 'zakat' || item.donation_type === 'zakath',
+                            'bg-primary': item.donation_type === 'sadaqah',
+                            'bg-info text-dark': item.donation_type === 'monthly_donation'
+                          }">
+                            {{ item.donation_type === 'monthly_donation' ? 'MONTHLY' : (item.donation_type === 'zakat' ? 'ZAKATH' : (item.donation_type | uppercase)) }}
                           </span>
                         </td>
                         <td class="fw-bold text-dark">₹{{ item.amount | number:'1.2-2' }}</td>
