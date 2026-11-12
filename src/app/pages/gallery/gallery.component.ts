@@ -133,96 +133,98 @@ import { GalleryItem } from '../../core/models/models';
         </div>
 
         <!-- Photos Grid -->
-        <div class="row g-3">
-          @for (photo of pagedPhotos(); track photo.id) {
-            <div class="col-sm-6 col-md-4 col-xl-3">
-              <div class="admin-card overflow-hidden h-100 d-flex flex-column photo-card">
-                <!-- Image Container with Zoom Trigger -->
-                <div class="position-relative photo-thumb-wrapper" (click)="openLightbox(photo)">
-                  <img 
-                    [src]="resolveImageUrl(photo.image_url)" 
-                    [alt]="photo.title"
-                    loading="lazy"
-                    decoding="async"
-                    class="w-100 h-100 object-fit-cover photo-thumb"
-                  >
-                  <!-- Zoom overlay -->
-                  <div class="thumb-hover-overlay">
-                    <span class="zoom-pill">
-                      <i class="bi bi-zoom-in me-1"></i> Full View
-                    </span>
-                  </div>
-
-                  <!-- Visibility Badge -->
-                  <span 
-                    class="badge position-absolute top-0 end-0 m-2 cursor-pointer shadow-sm" 
-                    [ngClass]="photo.is_visible ? 'bg-success' : 'bg-secondary'"
-                    (click)="$event.stopPropagation(); toggleVisibility(photo)"
-                    title="Click to toggle public visibility"
-                  >
-                    {{ photo.is_visible ? 'Live on Site' : 'Hidden' }}
-                  </span>
-
-                  <!-- Index Tag -->
-                  <span class="badge position-absolute bottom-0 start-0 m-2 bg-dark bg-opacity-75 font-monospace small">
-                    #{{ photo.order_num || photo.id }}
-                  </span>
-                </div>
-
-                <!-- Details -->
-                <div class="p-3 flex-grow-1 d-flex flex-column">
-                  <div class="d-flex align-items-center justify-content-between mb-1">
-                    <span class="badge-category" [ngClass]="getCategoryBadgeClass(photo.category)">
-                      {{ photo.category }}
-                    </span>
-                  </div>
-
-                  <h6 class="fw-bold mb-1 text-dark text-truncate" [title]="photo.title">
-                    {{ photo.title }}
-                  </h6>
-
-                  <p class="small text-muted mb-3 flex-grow-1 line-clamp-2" [title]="photo.caption || ''">
-                    {{ photo.caption || 'No caption provided.' }}
-                  </p>
-                  
-                  <div class="d-flex justify-content-between align-items-center pt-2 border-top">
-                    <button 
-                      class="btn btn-sm btn-outline-secondary" 
-                      (click)="openLightbox(photo)" 
-                      title="View Full Resolution"
+        <div class="admin-table-scroll p-1 mb-3" style="max-height: 560px; overflow-y: auto; overflow-x: hidden;">
+          <div class="row g-3">
+            @for (photo of pagedPhotos(); track photo.id) {
+              <div class="col-sm-6 col-md-4 col-xl-3">
+                <div class="admin-card overflow-hidden h-100 d-flex flex-column photo-card">
+                  <!-- Image Container with Zoom Trigger -->
+                  <div class="position-relative photo-thumb-wrapper" (click)="openLightbox(photo)">
+                    <img 
+                      [src]="resolveImageUrl(photo.image_url)" 
+                      [alt]="photo.title"
+                      loading="lazy"
+                      decoding="async"
+                      class="w-100 h-100 object-fit-cover photo-thumb"
                     >
-                      <i class="bi bi-eye"></i>
-                    </button>
-                    <div class="d-flex gap-1">
+                    <!-- Zoom overlay -->
+                    <div class="thumb-hover-overlay">
+                      <span class="zoom-pill">
+                        <i class="bi bi-zoom-in me-1"></i> Full View
+                      </span>
+                    </div>
+
+                    <!-- Visibility Badge -->
+                    <span 
+                      class="badge position-absolute top-0 end-0 m-2 cursor-pointer shadow-sm" 
+                      [ngClass]="photo.is_visible ? 'bg-success' : 'bg-secondary'"
+                      (click)="$event.stopPropagation(); toggleVisibility(photo)"
+                      title="Click to toggle public visibility"
+                    >
+                      {{ photo.is_visible ? 'Live on Site' : 'Hidden' }}
+                    </span>
+
+                    <!-- Index Tag -->
+                    <span class="badge position-absolute bottom-0 start-0 m-2 bg-dark bg-opacity-75 font-monospace small">
+                      #{{ photo.order_num || photo.id }}
+                    </span>
+                  </div>
+
+                  <!-- Details -->
+                  <div class="p-3 flex-grow-1 d-flex flex-column">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                      <span class="badge-category" [ngClass]="getCategoryBadgeClass(photo.category)">
+                        {{ photo.category }}
+                      </span>
+                    </div>
+
+                    <h6 class="fw-bold mb-1 text-dark text-truncate" [title]="photo.title">
+                      {{ photo.title }}
+                    </h6>
+
+                    <p class="small text-muted mb-3 flex-grow-1 line-clamp-2" [title]="photo.caption || ''">
+                      {{ photo.caption || 'No caption provided.' }}
+                    </p>
+                    
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top">
                       <button 
-                        class="btn btn-sm btn-outline-primary" 
-                        (click)="openEditModal(photo)"
-                        title="Edit Details"
+                        class="btn btn-sm btn-outline-secondary" 
+                        (click)="openLightbox(photo)" 
+                        title="View Full Resolution"
                       >
-                        <i class="bi bi-pencil"></i>
+                        <i class="bi bi-eye"></i>
                       </button>
-                      <button 
-                        class="btn btn-sm btn-outline-danger" 
-                        (click)="deletePhoto(photo.id)"
-                        title="Delete Photo"
-                      >
-                        <i class="bi bi-trash"></i>
-                      </button>
+                      <div class="d-flex gap-1">
+                        <button 
+                          class="btn btn-sm btn-outline-primary" 
+                          (click)="openEditModal(photo)"
+                          title="Edit Details"
+                        >
+                          <i class="bi bi-pencil"></i>
+                        </button>
+                        <button 
+                          class="btn btn-sm btn-outline-danger" 
+                          (click)="deletePhoto(photo.id)"
+                          title="Delete Photo"
+                        >
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          } @empty {
-            <div class="col-12 text-center py-5">
-              <i class="bi bi-images text-muted fs-1 mb-2 d-block"></i>
-              <div class="fw-semibold text-secondary">No photos found</div>
-              <p class="small text-muted">Try clearing your search query or uploading a photo into this category.</p>
-              <button class="btn btn-trust-primary btn-sm rounded-pill px-3" (click)="openAddModal()">
-                <i class="bi bi-plus-lg me-1"></i> Add Photo Now
-              </button>
-            </div>
-          }
+            } @empty {
+              <div class="col-12 text-center py-5">
+                <i class="bi bi-images text-muted fs-1 mb-2 d-block"></i>
+                <div class="fw-semibold text-secondary">No photos found</div>
+                <p class="small text-muted">Try clearing your search query or uploading a photo into this category.</p>
+                <button class="btn btn-trust-primary btn-sm rounded-pill px-3" (click)="openAddModal()">
+                  <i class="bi bi-plus-lg me-1"></i> Add Photo Now
+                </button>
+              </div>
+            }
+          </div>
         </div>
 
         <!-- Pagination Controls -->

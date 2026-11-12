@@ -58,68 +58,70 @@ import { Cause } from '../../core/models/models';
           <div class="spinner-border text-primary" role="status"></div>
         </div>
       } @else {
-        <div class="row g-4">
-          @for (item of filteredCauses(); track item.id) {
-            <div class="col-md-6 col-xl-4">
-              <div class="admin-card h-100 d-flex flex-column overflow-hidden">
-                <!-- Cause Image -->
-                <div class="position-relative" style="height: 180px; background: #e2e8f0;">
-                  <img 
-                    [src]="item.image_url || 'https://ik.imagekit.io/baaidzoik/assets/gallery/AR_food_dist.png'" 
-                    [alt]="item.title"
-                    class="w-100 h-100 object-fit-cover"
-                  >
-                  <span class="badge position-absolute top-0 start-0 m-2" [ngClass]="item.status === 'active' ? 'bg-success' : 'bg-secondary'">
-                    {{ item.status | uppercase }}
-                  </span>
-                  @if (item.featured) {
-                    <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2">
-                      <i class="bi bi-star-fill me-1"></i> Featured
+        <div class="admin-table-scroll p-1 mb-4" style="max-height: 560px; overflow-y: auto; overflow-x: hidden;">
+          <div class="row g-4">
+            @for (item of filteredCauses(); track item.id) {
+              <div class="col-md-6 col-xl-4">
+                <div class="admin-card h-100 d-flex flex-column overflow-hidden">
+                  <!-- Cause Image -->
+                  <div class="position-relative" style="height: 180px; background: #e2e8f0;">
+                    <img 
+                      [src]="item.image_url || 'https://ik.imagekit.io/baaidzoik/assets/gallery/AR_food_dist.png'" 
+                      [alt]="item.title"
+                      class="w-100 h-100 object-fit-cover"
+                    >
+                    <span class="badge position-absolute top-0 start-0 m-2" [ngClass]="item.status === 'active' ? 'bg-success' : 'bg-secondary'">
+                      {{ item.status | uppercase }}
                     </span>
-                  }
-                </div>
-
-                <!-- Cause Content -->
-                <div class="p-3 flex-grow-1 d-flex flex-column">
-                  <div class="small fw-bold text-uppercase text-muted mb-1">{{ item.category }}</div>
-                  <h5 class="fw-bold fs-6 mb-2 text-dark">{{ item.title }}</h5>
-                  <p class="small text-muted flex-grow-1 mb-3 text-truncate-3">
-                    {{ item.description }}
-                  </p>
-
-                  <!-- Progress Bar -->
-                  <div class="mb-3">
-                    <div class="d-flex justify-content-between small fw-bold mb-1">
-                      <span class="text-success">₹{{ item.raised_amount | number:'1.0-0' }}</span>
-                      <span class="text-muted">Target: ₹{{ item.target_amount | number:'1.0-0' }}</span>
-                    </div>
-                    <div class="progress" style="height: 8px;">
-                      <div 
-                        class="progress-bar bg-success" 
-                        role="progressbar" 
-                        [style.width.%]="getProgress(item)"
-                      ></div>
-                    </div>
-                    <div class="text-end small text-muted mt-1">{{ getProgress(item) | number:'1.0-0' }}% Funded</div>
+                    @if (item.featured) {
+                      <span class="badge bg-warning text-dark position-absolute top-0 end-0 m-2">
+                        <i class="bi bi-star-fill me-1"></i> Featured
+                      </span>
+                    }
                   </div>
 
-                  <!-- Actions -->
-                  <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-auto">
-                    <button class="btn btn-sm btn-outline-primary" (click)="openEditModal(item)">
-                      <i class="bi bi-pencil me-1"></i> Edit
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger" (click)="deleteCause(item.id)">
-                      <i class="bi bi-trash me-1"></i> Delete
-                    </button>
+                  <!-- Cause Content -->
+                  <div class="p-3 flex-grow-1 d-flex flex-column">
+                    <div class="small fw-bold text-uppercase text-muted mb-1">{{ item.category }}</div>
+                    <h5 class="fw-bold fs-6 mb-2 text-dark">{{ item.title }}</h5>
+                    <p class="small text-muted flex-grow-1 mb-3 text-truncate-3">
+                      {{ item.description }}
+                    </p>
+
+                    <!-- Progress Bar -->
+                    <div class="mb-3">
+                      <div class="d-flex justify-content-between small fw-bold mb-1">
+                        <span class="text-success">₹{{ item.raised_amount | number:'1.0-0' }}</span>
+                        <span class="text-muted">Target: ₹{{ item.target_amount | number:'1.0-0' }}</span>
+                      </div>
+                      <div class="progress" style="height: 8px;">
+                        <div 
+                          class="progress-bar bg-success" 
+                          role="progressbar" 
+                          [style.width.%]="getProgress(item)"
+                        ></div>
+                      </div>
+                      <div class="text-end small text-muted mt-1">{{ getProgress(item) | number:'1.0-0' }}% Funded</div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex justify-content-between align-items-center pt-2 border-top mt-auto">
+                      <button class="btn btn-sm btn-outline-primary" (click)="openEditModal(item)">
+                        <i class="bi bi-pencil me-1"></i> Edit
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger" (click)="deleteCause(item.id)">
+                        <i class="bi bi-trash me-1"></i> Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          } @empty {
-            <div class="col-12 text-center py-5 text-muted">
-              No causes found matching your search.
-            </div>
-          }
+            } @empty {
+              <div class="col-12 text-center py-5 text-muted">
+                No causes found matching your search.
+              </div>
+            }
+          </div>
         </div>
       }
     </div>

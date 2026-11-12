@@ -52,76 +52,78 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
 
       <!-- TAB 1: General Trust Settings -->
       @if (activeTab === 'general') {
-        <div class="row g-4">
-          <div class="col-lg-8">
-            <div class="admin-card p-4">
-              <h5 class="fw-bold mb-3" style="color: #0F3D63;"><i class="bi bi-info-circle me-2"></i>Official Charity Identity</h5>
-              <form (ngSubmit)="saveSettings()">
-                <div class="row g-3 mb-3">
-                  <div class="col-md-6">
-                    <label class="form-label small fw-bold">Trust Registered Name</label>
-                    <input type="text" class="form-control" [(ngModel)]="settings.trust_name" name="trust_name">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label small fw-bold">Charity Registration Number</label>
-                    <input type="text" class="form-control" [(ngModel)]="settings.reg_number" name="reg_number">
-                  </div>
-                </div>
-
-                <div class="row g-3 mb-3">
-                  <div class="col-md-6">
-                    <label class="form-label small fw-bold">UPI ID (For QR Code Payments)</label>
-                    <div class="input-group">
-                      <span class="input-group-text bg-light"><i class="bi bi-qr-code"></i></span>
-                      <input type="text" class="form-control font-monospace" [(ngModel)]="settings.upi_id" name="upi_id" placeholder="fuzailahmed536l@okaxis">
+        <div class="admin-table-scroll p-1 mb-4" style="max-height: 560px; overflow-y: auto; overflow-x: hidden;">
+          <div class="row g-4">
+            <div class="col-lg-8">
+              <div class="admin-card p-4">
+                <h5 class="fw-bold mb-3" style="color: #0F3D63;"><i class="bi bi-info-circle me-2"></i>Official Charity Identity</h5>
+                <form (ngSubmit)="saveSettings()">
+                  <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                      <label class="form-label small fw-bold">Trust Registered Name</label>
+                      <input type="text" class="form-control" [(ngModel)]="settings.trust_name" name="trust_name">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label small fw-bold">Charity Registration Number</label>
+                      <input type="text" class="form-control" [(ngModel)]="settings.reg_number" name="reg_number">
                     </div>
                   </div>
-                  <div class="col-md-6">
-                    <label class="form-label small fw-bold">UPI Payee / Beneficiary Name</label>
-                    <input type="text" class="form-control" [(ngModel)]="settings.payee_name" name="payee_name" placeholder="Ar Rahman Trust">
+
+                  <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                      <label class="form-label small fw-bold">UPI ID (For QR Code Payments)</label>
+                      <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="bi bi-qr-code"></i></span>
+                        <input type="text" class="form-control font-monospace" [(ngModel)]="settings.upi_id" name="upi_id" placeholder="fuzailahmed536l@okaxis">
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label small fw-bold">UPI Payee / Beneficiary Name</label>
+                      <input type="text" class="form-control" [(ngModel)]="settings.payee_name" name="payee_name" placeholder="Ar Rahman Trust">
+                    </div>
                   </div>
-                </div>
 
-                <div class="row g-3 mb-3">
-                  <div class="col-md-6">
-                    <label class="form-label small fw-bold">Contact Phone Number</label>
-                    <input type="text" class="form-control" [(ngModel)]="settings.contact_phone" name="contact_phone" placeholder="+91 80156 65648">
+                  <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                      <label class="form-label small fw-bold">Contact Phone Number</label>
+                      <input type="text" class="form-control" [(ngModel)]="settings.contact_phone" name="contact_phone" placeholder="+91 80156 65648">
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label small fw-bold">Contact Email</label>
+                      <input type="email" class="form-control" [(ngModel)]="settings.contact_email" name="contact_email" placeholder="arrahmantrust@gmail.com">
+                    </div>
                   </div>
-                  <div class="col-md-6">
-                    <label class="form-label small fw-bold">Contact Email</label>
-                    <input type="email" class="form-control" [(ngModel)]="settings.contact_email" name="contact_email" placeholder="arrahmantrust@gmail.com">
+
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold">Headquarters Address</label>
+                    <textarea class="form-control" rows="2" [(ngModel)]="settings.trust_address" name="trust_address"></textarea>
                   </div>
-                </div>
 
-                <div class="mb-3">
-                  <label class="form-label small fw-bold">Headquarters Address</label>
-                  <textarea class="form-control" rows="2" [(ngModel)]="settings.trust_address" name="trust_address"></textarea>
-                </div>
+                  <div class="mb-4">
+                    <label class="form-label small fw-bold">Website Header Notification / Banner</label>
+                    <input type="text" class="form-control" [(ngModel)]="settings.banner_announcement" name="banner_announcement">
+                  </div>
 
-                <div class="mb-4">
-                  <label class="form-label small fw-bold">Website Header Notification / Banner</label>
-                  <input type="text" class="form-control" [(ngModel)]="settings.banner_announcement" name="banner_announcement">
-                </div>
-
-                <button type="submit" class="btn btn-trust-primary" [disabled]="isSubmitting()">
-                  {{ isSubmitting() ? 'Saving...' : 'Save Trust Settings' }}
-                </button>
-              </form>
-            </div>
-          </div>
-
-          <div class="col-lg-4">
-            <div class="admin-card p-4">
-              <h6 class="fw-bold mb-3 text-secondary">LIVE QR CODE PREVIEW</h6>
-              <div class="p-3 bg-light rounded-3 text-center border">
-                <i class="bi bi-upc-scan fs-1 text-primary mb-2 d-block"></i>
-                <div class="small fw-bold text-dark">{{ settings.payee_name || 'Ar Rahman Trust' }}</div>
-                <div class="font-monospace small text-muted mb-2">{{ settings.upi_id || 'fuzailahmed536l@okaxis' }}</div>
-                <div class="badge bg-success">UPI Instant QR Ready</div>
+                  <button type="submit" class="btn btn-trust-primary" [disabled]="isSubmitting()">
+                    {{ isSubmitting() ? 'Saving...' : 'Save Trust Settings' }}
+                  </button>
+                </form>
               </div>
-              <p class="small text-muted mt-3 mb-0">
-                Any changes saved here immediately update the payment details shown to donors on the official website.
-              </p>
+            </div>
+
+            <div class="col-lg-4">
+              <div class="admin-card p-4">
+                <h6 class="fw-bold mb-3 text-secondary">LIVE QR CODE PREVIEW</h6>
+                <div class="p-3 bg-light rounded-3 text-center border">
+                  <i class="bi bi-upc-scan fs-1 text-primary mb-2 d-block"></i>
+                  <div class="small fw-bold text-dark">{{ settings.payee_name || 'Ar Rahman Trust' }}</div>
+                  <div class="font-monospace small text-muted mb-2">{{ settings.upi_id || 'fuzailahmed536l@okaxis' }}</div>
+                  <div class="badge bg-success">UPI Instant QR Ready</div>
+                </div>
+                <p class="small text-muted mt-3 mb-0">
+                  Any changes saved here immediately update the payment details shown to donors on the official website.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -129,65 +131,67 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
 
       <!-- TAB 2: Profile & Password -->
       @if (activeTab === 'profile') {
-        <div class="row g-4">
-          <div class="col-lg-7">
-            <div class="admin-card p-4">
-              <h5 class="fw-bold mb-3" style="color: #0F3D63;"><i class="bi bi-shield-lock me-2"></i>Change Admin Password</h5>
-              <form (ngSubmit)="updatePassword()">
-                <div class="mb-3">
-                  <label class="form-label small fw-bold">Current Password</label>
-                  <input type="password" class="form-control" [(ngModel)]="profileData.currentPassword" name="currentPassword" required>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label small fw-bold">New Password</label>
-                  <input type="password" class="form-control" [(ngModel)]="profileData.newPassword" name="newPassword" required>
-                </div>
-                <div class="mb-4">
-                  <label class="form-label small fw-bold">Confirm New Password</label>
-                  <input type="password" class="form-control" [(ngModel)]="profileData.confirmPassword" name="confirmPassword" required>
-                </div>
-                <button type="submit" class="btn btn-trust-primary" [disabled]="isSubmitting()">
-                  Update Password
-                </button>
-              </form>
-            </div>
-          </div>
-
-          <div class="col-lg-5">
-            <div class="admin-card p-4 text-center">
-              <div class="avatar-circle mx-auto mb-3" style="width: 70px; height: 70px; font-size: 1.8rem; background: #0F3D63; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                {{ (authService.currentUser()?.name || 'A').charAt(0).toUpperCase() }}
+        <div class="admin-table-scroll p-1 mb-4" style="max-height: 560px; overflow-y: auto; overflow-x: hidden;">
+          <div class="row g-4">
+            <div class="col-lg-7">
+              <div class="admin-card p-4">
+                <h5 class="fw-bold mb-3" style="color: #0F3D63;"><i class="bi bi-shield-lock me-2"></i>Change Admin Password</h5>
+                <form (ngSubmit)="updatePassword()">
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold">Current Password</label>
+                    <input type="password" class="form-control" [(ngModel)]="profileData.currentPassword" name="currentPassword" required>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-bold">New Password</label>
+                    <input type="password" class="form-control" [(ngModel)]="profileData.newPassword" name="newPassword" required>
+                  </div>
+                  <div class="mb-4">
+                    <label class="form-label small fw-bold">Confirm New Password</label>
+                    <input type="password" class="form-control" [(ngModel)]="profileData.confirmPassword" name="confirmPassword" required>
+                  </div>
+                  <button type="submit" class="btn btn-trust-primary" [disabled]="isSubmitting()">
+                    Update Password
+                  </button>
+                </form>
               </div>
-              <h5 class="fw-bold mb-1">{{ authService.currentUser()?.name }}</h5>
-              <p class="text-muted small mb-2">{{ authService.currentUser()?.email }}</p>
-              <span class="badge bg-primary text-uppercase">{{ authService.currentUser()?.role }}</span>
             </div>
 
-            <!-- Inactivity Auto-Logout Security Card -->
-            <div class="admin-card p-4 mt-4 text-start">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <i class="bi bi-clock-history fs-5 text-warning"></i>
-                <h6 class="fw-bold mb-0 text-dark">Inactivity Auto-Logout</h6>
+            <div class="col-lg-5">
+              <div class="admin-card p-4 text-center">
+                <div class="avatar-circle mx-auto mb-3" style="width: 70px; height: 70px; font-size: 1.8rem; background: #0F3D63; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                  {{ (authService.currentUser()?.name || 'A').charAt(0).toUpperCase() }}
+                </div>
+                <h5 class="fw-bold mb-1">{{ authService.currentUser()?.name }}</h5>
+                <p class="text-muted small mb-2">{{ authService.currentUser()?.email }}</p>
+                <span class="badge bg-primary text-uppercase">{{ authService.currentUser()?.role }}</span>
               </div>
-              <p class="text-muted small mb-3">
-                Automatically logs out the admin console when no mouse, keyboard, or touch input is detected.
-              </p>
 
-              <label class="form-label small fw-bold text-secondary">Idle Timeout Duration</label>
-              <select 
-                class="form-select form-select-sm" 
-                [ngModel]="autoLogoutService.idleTimeoutMinutes()" 
-                (ngModelChange)="onTimeoutChange($event)"
-              >
-                <option [value]="5">5 Minutes (High Security)</option>
-                <option [value]="10">10 Minutes (Recommended)</option>
-                <option [value]="15">15 Minutes (Default)</option>
-                <option [value]="30">30 Minutes</option>
-                <option [value]="60">60 Minutes (Extended)</option>
-              </select>
-              <div class="text-success small mt-2 d-flex align-items-center gap-1">
-                <i class="bi bi-shield-check"></i>
-                <span>Active: Auto-logout after {{ autoLogoutService.idleTimeoutMinutes() }}m with 60s countdown warning</span>
+              <!-- Inactivity Auto-Logout Security Card -->
+              <div class="admin-card p-4 mt-4 text-start">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <i class="bi bi-clock-history fs-5 text-warning"></i>
+                  <h6 class="fw-bold mb-0 text-dark">Inactivity Auto-Logout</h6>
+                </div>
+                <p class="text-muted small mb-3">
+                  Automatically logs out the admin console when no mouse, keyboard, or touch input is detected.
+                </p>
+
+                <label class="form-label small fw-bold text-secondary">Idle Timeout Duration</label>
+                <select 
+                  class="form-select form-select-sm" 
+                  [ngModel]="autoLogoutService.idleTimeoutMinutes()" 
+                  (ngModelChange)="onTimeoutChange($event)"
+                >
+                  <option [value]="5">5 Minutes (High Security)</option>
+                  <option [value]="10">10 Minutes (Recommended)</option>
+                  <option [value]="15">15 Minutes (Default)</option>
+                  <option [value]="30">30 Minutes</option>
+                  <option [value]="60">60 Minutes (Extended)</option>
+                </select>
+                <div class="text-success small mt-2 d-flex align-items-center gap-1">
+                  <i class="bi bi-shield-check"></i>
+                  <span>Active: Auto-logout after {{ autoLogoutService.idleTimeoutMinutes() }}m with 60s countdown warning</span>
+                </div>
               </div>
             </div>
           </div>
