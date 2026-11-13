@@ -15,18 +15,48 @@ export class AuthService {
   token = signal<string | null>(localStorage.getItem('art_token'));
   isAuthenticated = computed(() => !!this.token() && !!this.currentUser());
   isSuperAdmin = computed(() => {
-    const role = (this.currentUser()?.role || '').toLowerCase();
-    return role === 'superadmin' || role === 'super admin';
+    const role = (this.currentUser()?.role || '').toLowerCase().trim();
+    return role === 'superadmin' || role === 'super admin' || role === 'super_admin';
   });
 
   hasPermission(pageKey: string): boolean {
     const user = this.currentUser();
     if (!user) return false;
-    const role = (user.role || '').toLowerCase();
-    if (role === 'superadmin' || role === 'super admin') return true;
-    const perms = user.permissions || [];
+    const role = (user.role || '').toLowerCase().trim();
+
+    // Super Admin has unrestricted access across all modules
+    if (role === 'superadmin' || role === 'super admin' || role === 'super_admin') {
+      return true;
+    }
+
+    // Standard Admin / Managing Trustee / Trustee has full administrative access
+    if (role === 'admin' || role === 'managing trustee' || role === 'trustee' || role === 'administrator') {
+      return true;
+    }
+
+    // Dashboard overview is accessible to all authenticated staff
+    if (pageKey === 'dashboard') {
+      return true;
+    }
+
+    const perms = user.permissions;
+    // Fallback: If permissions not defined (e.g. existing session before RBAC), grant access gracefully
+    if (!perms || !Array.isArray(perms) || perms.length === 0) {
+      return true;
+    }
+
     if (perms.includes('*')) return true;
     return perms.includes(pageKey);
+  }
+
+  getFirstAccessibleRoute(): string {
+    const pages = ['dashboard', 'donations', 'causes', 'gallery', 'volunteers', 'inquiries', 'settings', 'admins', 'roles'];
+    for (const page of pages) {
+      if (this.hasPermission(page)) {
+        return `/${page}`;
+      }
+    }
+    return '/dashboard';
   }
 
   constructor(private http: HttpClient, private router: Router) {}

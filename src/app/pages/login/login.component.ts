@@ -1099,7 +1099,7 @@ export class LoginComponent implements OnInit {
     private route: ActivatedRoute
   ) {
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/dashboard']);
+      this.router.navigate([this.authService.getFirstAccessibleRoute()]);
     }
   }
 
@@ -1148,7 +1148,7 @@ export class LoginComponent implements OnInit {
       next: (res) => {
         this.isLoading.set(false);
         if (res.success) {
-          this.router.navigate(['/dashboard']);
+          this.router.navigate([this.authService.getFirstAccessibleRoute()]);
         }
       },
       error: (err) => {
