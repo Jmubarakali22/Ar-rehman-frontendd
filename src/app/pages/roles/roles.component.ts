@@ -1184,8 +1184,22 @@ export class RolesComponent implements OnInit {
   openAssignUserModal(user: UserRoleItem): void {
     this.selectedUser = user;
     const currentPerms = user.custom_permissions || user.effective_permissions || [];
+
+    // Match role against roles() list gracefully (case-insensitive & legacy aliases)
+    let matchedRoleName = user.role;
+    const match = this.roles().find(r => 
+      r.name.toLowerCase() === (user.role || '').toLowerCase() ||
+      ((user.role || '').toLowerCase() === 'superadmin' && r.name.toLowerCase() === 'super admin') ||
+      ((user.role || '').toLowerCase() === 'admin' && r.name.toLowerCase() === 'managing trustee')
+    );
+    if (match) {
+      matchedRoleName = match.name;
+    } else if (this.roles().length > 0) {
+      matchedRoleName = this.roles()[0].name;
+    }
+
     this.assignForm = {
-      role: user.role,
+      role: matchedRoleName,
       permissions: [...currentPerms]
     };
     this.showAssignModal.set(true);
