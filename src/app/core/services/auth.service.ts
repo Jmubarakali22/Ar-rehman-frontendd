@@ -14,7 +14,20 @@ export class AuthService {
   currentUser = signal<Admin | null>(this.getStoredUser());
   token = signal<string | null>(localStorage.getItem('art_token'));
   isAuthenticated = computed(() => !!this.token() && !!this.currentUser());
-  isSuperAdmin = computed(() => this.currentUser()?.role === 'superadmin');
+  isSuperAdmin = computed(() => {
+    const role = (this.currentUser()?.role || '').toLowerCase();
+    return role === 'superadmin' || role === 'super admin';
+  });
+
+  hasPermission(pageKey: string): boolean {
+    const user = this.currentUser();
+    if (!user) return false;
+    const role = (user.role || '').toLowerCase();
+    if (role === 'superadmin' || role === 'super admin') return true;
+    const perms = user.permissions || [];
+    if (perms.includes('*')) return true;
+    return perms.includes(pageKey);
+  }
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -91,5 +104,30 @@ export class AuthService {
 
   deleteAdmin(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
+
+  // --- Roles & Access Control Methods ---
+  getRoles(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/roles`);
+  }
+
+  createRole(data: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/roles`, data);
+  }
+
+  updateRole(id: number, data: any): Observable<any> {
+    return this.http.put<any>(`${environment.apiUrl}/roles/${id}`, data);
+  }
+
+  deleteRole(id: number): Observable<any> {
+    return this.http.delete<any>(`${environment.apiUrl}/roles/${id}`);
+  }
+
+  getRoleUsers(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/roles/users`);
+  }
+
+  assignUserAccess(userId: number, data: any): Observable<any> {
+    return this.http.put<any>(`${environment.apiUrl}/roles/assign-user/${userId}`, data);
   }
 }

@@ -3,9 +3,40 @@ export interface Admin {
   username: string;
   email: string;
   name: string;
-  role: 'superadmin' | 'admin' | 'moderator';
+  role: 'superadmin' | 'admin' | 'moderator' | string;
+  permissions?: string[];
   avatar?: string;
   created_at?: string;
+}
+
+export interface Role {
+  id: number;
+  name: string;
+  description?: string;
+  permissions: string[];
+  is_system: boolean;
+  user_count?: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface UserRoleItem {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  role: string;
+  avatar?: string;
+  custom_permissions?: string[] | null;
+  effective_permissions: string[];
+  is_superadmin: boolean;
+  created_at?: string;
+}
+
+export interface AvailablePage {
+  key: string;
+  name: string;
+  description: string;
 }
 
 export interface Donation {

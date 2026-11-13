@@ -49,52 +49,57 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
             CORE MANAGEMENT
           </div>
 
-          <a routerLink="/dashboard" routerLinkActive="active" class="nav-item-link" (click)="closeMobileSidebar()">
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-item-link" *ngIf="authService.hasPermission('dashboard')" (click)="closeMobileSidebar()">
             <i class="bi bi-speedometer2"></i>
             <span *ngIf="!isSidebarCollapsed()">Dashboard</span>
           </a>
 
-          <a routerLink="/donations" routerLinkActive="active" class="nav-item-link" (click)="closeMobileSidebar()">
+          <a routerLink="/donations" routerLinkActive="active" class="nav-item-link" *ngIf="authService.hasPermission('donations')" (click)="closeMobileSidebar()">
             <i class="bi bi-cash-coin"></i>
             <span *ngIf="!isSidebarCollapsed()">Donations</span>
           </a>
 
-          <a routerLink="/causes" routerLinkActive="active" class="nav-item-link" (click)="closeMobileSidebar()">
+          <a routerLink="/causes" routerLinkActive="active" class="nav-item-link" *ngIf="authService.hasPermission('causes')" (click)="closeMobileSidebar()">
             <i class="bi bi-heart-pulse-fill"></i>
             <span *ngIf="!isSidebarCollapsed()">Causes / Programs</span>
           </a>
 
-          <a routerLink="/gallery" routerLinkActive="active" class="nav-item-link" (click)="closeMobileSidebar()">
+          <a routerLink="/gallery" routerLinkActive="active" class="nav-item-link" *ngIf="authService.hasPermission('gallery')" (click)="closeMobileSidebar()">
             <i class="bi bi-images"></i>
             <span *ngIf="!isSidebarCollapsed()">Gallery Photos</span>
           </a>
 
-          <div class="nav-section-title px-3 mt-4 mb-2" *ngIf="!isSidebarCollapsed()">
+          <div class="nav-section-title px-3 mt-4 mb-2" *ngIf="!isSidebarCollapsed() && (authService.hasPermission('volunteers') || authService.hasPermission('inquiries'))">
             COMMUNITY & ENGAGEMENT
           </div>
 
-          <a routerLink="/volunteers" routerLinkActive="active" class="nav-item-link" (click)="closeMobileSidebar()">
+          <a routerLink="/volunteers" routerLinkActive="active" class="nav-item-link" *ngIf="authService.hasPermission('volunteers')" (click)="closeMobileSidebar()">
             <i class="bi bi-people-fill"></i>
             <span *ngIf="!isSidebarCollapsed()">Volunteers</span>
           </a>
 
-          <a routerLink="/inquiries" routerLinkActive="active" class="nav-item-link" (click)="closeMobileSidebar()">
+          <a routerLink="/inquiries" routerLinkActive="active" class="nav-item-link" *ngIf="authService.hasPermission('inquiries')" (click)="closeMobileSidebar()">
             <i class="bi bi-envelope-paper-fill"></i>
             <span *ngIf="!isSidebarCollapsed()">Contact Inquiries</span>
           </a>
 
-          <div class="nav-section-title px-3 mt-4 mb-2" *ngIf="!isSidebarCollapsed()">
+          <div class="nav-section-title px-3 mt-4 mb-2" *ngIf="!isSidebarCollapsed() && (authService.hasPermission('settings') || authService.hasPermission('admins') || authService.hasPermission('roles'))">
             CONFIGURATION
           </div>
 
-          <a routerLink="/settings" routerLinkActive="active" class="nav-item-link" (click)="closeMobileSidebar()">
+          <a routerLink="/settings" routerLinkActive="active" class="nav-item-link" *ngIf="authService.hasPermission('settings')" (click)="closeMobileSidebar()">
             <i class="bi bi-gear-fill"></i>
             <span *ngIf="!isSidebarCollapsed()">Trust Settings</span>
           </a>
 
-          <a routerLink="/admins" routerLinkActive="active" class="nav-item-link" *ngIf="authService.isSuperAdmin()" (click)="closeMobileSidebar()">
+          <a routerLink="/admins" routerLinkActive="active" class="nav-item-link" *ngIf="authService.hasPermission('admins')" (click)="closeMobileSidebar()">
             <i class="bi bi-shield-lock-fill"></i>
             <span *ngIf="!isSidebarCollapsed()">Admin Accounts</span>
+          </a>
+
+          <a routerLink="/roles" routerLinkActive="active" class="nav-item-link" *ngIf="authService.hasPermission('roles')" (click)="closeMobileSidebar()">
+            <i class="bi bi-person-gear"></i>
+            <span *ngIf="!isSidebarCollapsed()">Roles & Access</span>
           </a>
         </div>
       </aside>
@@ -136,11 +141,13 @@ import { AutoLogoutService } from '../../core/services/auto-logout.service';
                 </div>
                 <div class="d-none d-lg-block text-start">
                   <div class="fw-bold small text-dark">{{ getDisplayName() }}</div>
+                  <div class="text-muted" style="font-size: 11px;">{{ authService.currentUser()?.role || 'Staff' }}</div>
                 </div>
               </div>
               <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
                 <li><h6 class="dropdown-header">{{ authService.currentUser()?.email }}</h6></li>
                 <li><a class="dropdown-item" routerLink="/settings"><i class="bi bi-person me-2"></i>My Profile</a></li>
+                <li *ngIf="authService.hasPermission('roles')"><a class="dropdown-item" routerLink="/roles"><i class="bi bi-person-gear me-2"></i>Roles & Access</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><button class="dropdown-item text-danger" (click)="authService.logout()"><i class="bi bi-box-arrow-right me-2"></i>Log Out</button></li>
               </ul>
