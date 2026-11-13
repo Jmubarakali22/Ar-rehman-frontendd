@@ -523,6 +523,12 @@ import { Donation } from '../../core/models/models';
                     </div>
                   </div>
                   <div class="col-12 col-sm-6 text-center text-sm-end">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-1" style="width: 34px; height: 34px; background: #f0f7ff; border: 1.5px solid #0F3D63;">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L4 5.5V11.5C4 16.5 7.4 21.1 12 22.3C16.6 21.1 20 16.5 20 11.5V5.5L12 2Z" fill="#0F3D63" fill-opacity="0.18" stroke="#0F3D63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M9 12.2L11 14.2L15.5 9.7" stroke="#0F3D63" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
                     <div class="small text-muted fw-semibold" style="font-size: 10.5px; letter-spacing: 0.5px;">Digitally Signed</div>
                     <div class="fw-bold" style="color: #0F3D63; font-size: 13px;">Authorised Signatory</div>
                     <div class="text-muted small">Managing Trustee</div>
@@ -664,6 +670,12 @@ import { Donation } from '../../core/models/models';
                 </div>
               </div>
               <div class="col-6 text-end">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-1" style="width: 32px; height: 32px; background: #f0f7ff; border: 1.5px solid #0F3D63;">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L4 5.5V11.5C4 16.5 7.4 21.1 12 22.3C16.6 21.1 20 16.5 20 11.5V5.5L12 2Z" fill="#0F3D63" fill-opacity="0.18" stroke="#0F3D63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 12.2L11 14.2L15.5 9.7" stroke="#0F3D63" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
                 <div class="small text-muted fw-semibold" style="font-size: 10px; letter-spacing: 0.5px;">Digitally Signed</div>
                 <div class="fw-bold" style="color: #0F3D63; font-size: 13px;">Authorised Signatory</div>
                 <div class="text-muted small">Managing Trustee</div>
