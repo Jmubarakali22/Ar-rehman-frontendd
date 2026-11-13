@@ -437,7 +437,7 @@ import { Donation } from '../../core/models/models';
                     Registered Charity No. <strong style="color: #0F3D63;">04/16/2020</strong> &bull; 112, Small Mosque Street, Pernambut, Vellore Dist., Tamil Nadu - 635810
                   </div>
                   <div class="d-inline-block mt-2 px-3 py-1 text-uppercase fw-bold" style="background: #e8f5e9; color: #166534; font-size: 11px; border-radius: 20px; border: 1px solid #bbf7d0; letter-spacing: 0.5px;">
-                    Official Donation &amp; Zakat Receipt
+                    Receipt
                   </div>
                 </div>
 
@@ -452,8 +452,8 @@ import { Donation } from '../../core/models/models';
                     <strong class="text-dark">{{ activeReceipt?.created_at | date:'mediumDate' }}</strong>
                   </div>
                   <div class="col-12 col-sm-4 text-center text-sm-end">
-                    <span class="text-muted" style="font-size: 11px;">Financial Year:</span><br>
-                    <strong class="text-dark">2026 - 2027</strong>
+                    <span class="text-muted" style="font-size: 11px;">Registered Charity No.:</span><br>
+                    <strong class="text-dark">04/16/2020</strong>
                   </div>
                 </div>
 
@@ -500,15 +500,25 @@ import { Donation } from '../../core/models/models';
                 </div>
 
                 <!-- Official Stamp & Signatory Footer (Responsive Row) -->
-                <div class="row pt-3 border-top align-items-center mb-2" style="border-top: 1px solid #e2e8f0 !important;">
+                <div class="row pt-3 border-top align-items-center" style="border-top: 1px solid #e2e8f0 !important;">
                   <div class="col-12 col-sm-6 d-flex justify-content-center justify-content-sm-start mb-3 mb-sm-0">
-                    <div class="d-flex align-items-center gap-2">
-                      <div class="rounded-circle d-flex align-items-center justify-content-center text-success border border-2 border-success" style="width: 44px; height: 44px; background: #ecfdf5;">
-                        <i class="bi bi-shield-check fs-4"></i>
-                      </div>
-                      <div class="text-start">
-                        <div class="fw-bold text-success text-uppercase" style="font-size: 11px;">Verified &amp; Credited</div>
-                        <div class="text-muted" style="font-size: 10px;">Official Seal &bull; Regd. 04/16/2020</div>
+                    <!-- Official Ar Rahman Trust Rubber Stamp -->
+                    <div style="display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 112px; height: 112px; border: 2.5px solid #166534; border-radius: 50%; padding: 3px; box-sizing: border-box; background: rgba(240, 253, 244, 0.45); transform: rotate(-3deg); box-shadow: 0 0 0 1px rgba(22, 101, 52, 0.15);">
+                      <div style="width: 100%; height: 100%; border: 1.5px dashed #166534; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4px; box-sizing: border-box;">
+                        <div style="font-size: 8px; font-weight: 800; letter-spacing: 0.8px; color: #166534; text-transform: uppercase; line-height: 1.1;">
+                          ★ AR RAHMAN TRUST ★
+                        </div>
+                        <div style="margin: 3px 0; border-top: 1px solid #166534; border-bottom: 1px solid #166534; padding: 2px 2px; width: 92%;">
+                          <div style="font-size: 8px; font-weight: 900; letter-spacing: 0.5px; color: #15803d; text-transform: uppercase; line-height: 1.1;">
+                            VERIFIED &amp; CREDITED
+                          </div>
+                        </div>
+                        <div style="font-size: 7.5px; font-weight: 700; letter-spacing: 0.4px; color: #166534; text-transform: uppercase; line-height: 1;">
+                          PERNAMBUT
+                        </div>
+                        <div style="font-size: 6.5px; font-weight: 700; color: #15803d; line-height: 1; margin-top: 2px;">
+                          04/16/2020
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -517,11 +527,6 @@ import { Donation } from '../../core/models/models';
                     <div class="text-muted small">Managing Trustee &bull; Pernambut</div>
                     <div class="text-secondary" style="font-size: 10px;">Ar Rahman Trust, Vellore Dist.</div>
                   </div>
-                </div>
-
-                <!-- Bottom Official Verification Line (Ensures Complete Closed Card Frame) -->
-                <div class="pt-2 border-top text-center text-muted" style="border-top: 1px dashed #cbd5e1 !important; font-size: 10px;">
-                  Official Electronic Charity Receipt &bull; Regd. Charity No. 04/16/2020 &bull; Ar Rahman Trust, Pernambut &bull; Helping Needy People
                 </div>
               </div>
             </div>
@@ -567,7 +572,7 @@ import { Donation } from '../../core/models/models';
                 Registered Charity No. <strong style="color: #0F3D63;">04/16/2020</strong> &bull; 112, Small Mosque Street, Pernambut, Vellore Dist., Tamil Nadu - 635810
               </div>
               <div class="d-inline-block mt-2 px-3 py-1 text-uppercase fw-bold" style="background: #e8f5e9; color: #166534; font-size: 11px; border-radius: 20px; border: 1.5px solid #86efac; letter-spacing: 0.5px;">
-                Official Donation &amp; Zakat Receipt
+                Receipt
               </div>
             </div>
 
@@ -582,8 +587,8 @@ import { Donation } from '../../core/models/models';
                 <strong class="text-dark">{{ activeReceipt?.created_at | date:'mediumDate' }}</strong>
               </div>
               <div class="col-4 text-end">
-                <span class="text-muted" style="font-size: 10.5px;">Financial Year:</span><br>
-                <strong class="text-dark">2026 - 2027</strong>
+                <span class="text-muted" style="font-size: 10.5px;">Registered Charity No.:</span><br>
+                <strong class="text-dark">04/16/2020</strong>
               </div>
             </div>
 
@@ -636,16 +641,25 @@ import { Donation } from '../../core/models/models';
             </div>
 
             <!-- Official Stamp & Signatory Footer -->
-            <div class="row pt-2 border-top align-items-center mb-2" style="border-top: 1.5px solid #e2e8f0 !important;">
+            <div class="row pt-2 border-top align-items-center" style="border-top: 1.5px solid #e2e8f0 !important;">
               <div class="col-6">
-                <div class="d-flex align-items-center gap-2">
-                  <div class="rounded-circle d-flex align-items-center justify-content-center text-success border border-2 border-success" style="width: 44px; height: 44px; background: #ecfdf5;">
-                    <i class="bi bi-shield-check fs-4"></i>
-                  </div>
-                  <div>
-                    <div class="fw-bold text-success text-uppercase" style="font-size: 11px;">Verified &amp; Credited</div>
-                    <div class="text-muted" style="font-size: 9.5px;">Official Seal &bull; Regd. 04/16/2020</div>
-                    <div class="text-secondary" style="font-size: 9px;">Ar Rahman Trust &bull; Pernambut</div>
+                <!-- Official Ar Rahman Trust Rubber Stamp -->
+                <div style="display: inline-flex; flex-direction: column; align-items: center; justify-content: center; width: 108px; height: 108px; border: 2.5px solid #166534; border-radius: 50%; padding: 3px; box-sizing: border-box; background: rgba(240, 253, 244, 0.45); transform: rotate(-3deg); box-shadow: 0 0 0 1px rgba(22, 101, 52, 0.15);">
+                  <div style="width: 100%; height: 100%; border: 1.5px dashed #166534; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 4px; box-sizing: border-box;">
+                    <div style="font-size: 8px; font-weight: 800; letter-spacing: 0.8px; color: #166534; text-transform: uppercase; line-height: 1.1;">
+                      ★ AR RAHMAN TRUST ★
+                    </div>
+                    <div style="margin: 3px 0; border-top: 1px solid #166534; border-bottom: 1px solid #166534; padding: 2px 2px; width: 92%;">
+                      <div style="font-size: 7.5px; font-weight: 900; letter-spacing: 0.5px; color: #15803d; text-transform: uppercase; line-height: 1.1;">
+                        VERIFIED &amp; CREDITED
+                      </div>
+                    </div>
+                    <div style="font-size: 7.5px; font-weight: 700; letter-spacing: 0.4px; color: #166534; text-transform: uppercase; line-height: 1;">
+                      PERNAMBUT
+                    </div>
+                    <div style="font-size: 6.5px; font-weight: 700; color: #15803d; line-height: 1; margin-top: 2px;">
+                      04/16/2020
+                    </div>
                   </div>
                 </div>
               </div>
@@ -654,11 +668,6 @@ import { Donation } from '../../core/models/models';
                 <div class="text-muted small">Managing Trustee &bull; Pernambut</div>
                 <div class="text-secondary" style="font-size: 9.5px;">Ar Rahman Trust, Vellore Dist.</div>
               </div>
-            </div>
-
-            <!-- Bottom Legal / Verification Line (Fully Inside Closed Outer Frame) -->
-            <div class="pt-2 border-top text-center text-muted" style="border-top: 1px dashed #cbd5e1 !important; font-size: 9.5px;">
-              Official Electronic Charity Receipt &bull; Registered Charity No. <strong style="color: #0F3D63;">04/16/2020</strong> &bull; Ar Rahman Trust, Pernambut &bull; Helping Needy People
             </div>
 
           </div>
