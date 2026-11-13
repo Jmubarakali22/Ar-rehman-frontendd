@@ -227,6 +227,17 @@ import { Role, UserRoleItem, AvailablePage } from '../../core/models/models';
                   </div>
                 </div>
               </div>
+            } @empty {
+              <div class="col-12">
+                <div class="clean-card p-5 text-center">
+                  <i class="bi bi-shield-exclamation text-warning fs-1 d-block mb-2"></i>
+                  <h6 class="fw-bold text-dark">No Roles Defined Yet</h6>
+                  <p class="text-muted small mb-3">Create custom designations or reload system standard templates.</p>
+                  <button class="btn btn-trust-primary btn-sm px-3" (click)="openCreateRoleModal()">
+                    <i class="bi bi-plus-circle me-1"></i> Create First Role
+                  </button>
+                </div>
+              </div>
             }
           </div>
         }
