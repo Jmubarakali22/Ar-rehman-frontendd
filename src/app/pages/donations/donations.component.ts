@@ -523,9 +523,9 @@ import { Donation } from '../../core/models/models';
                     </div>
                   </div>
                   <div class="col-12 col-sm-6 text-center text-sm-end">
-                    <div class="fw-bold" style="color: #0F3D63; font-size: 13px;">Authorized Signatory</div>
-                    <div class="text-muted small">Managing Trustee &bull; Pernambut</div>
-                    <div class="text-secondary" style="font-size: 10px;">Ar Rahman Trust, Vellore Dist.</div>
+                    <div class="small text-muted fw-semibold" style="font-size: 10.5px; letter-spacing: 0.5px;">Digitally Signed</div>
+                    <div class="fw-bold" style="color: #0F3D63; font-size: 13px;">Authorised Signatory</div>
+                    <div class="text-muted small">Managing Trustee</div>
                   </div>
                 </div>
               </div>
@@ -664,9 +664,9 @@ import { Donation } from '../../core/models/models';
                 </div>
               </div>
               <div class="col-6 text-end">
-                <div class="fw-bold" style="color: #0F3D63; font-size: 13px;">Authorized Signatory</div>
-                <div class="text-muted small">Managing Trustee &bull; Pernambut</div>
-                <div class="text-secondary" style="font-size: 9.5px;">Ar Rahman Trust, Vellore Dist.</div>
+                <div class="small text-muted fw-semibold" style="font-size: 10px; letter-spacing: 0.5px;">Digitally Signed</div>
+                <div class="fw-bold" style="color: #0F3D63; font-size: 13px;">Authorised Signatory</div>
+                <div class="text-muted small">Managing Trustee</div>
               </div>
             </div>
 

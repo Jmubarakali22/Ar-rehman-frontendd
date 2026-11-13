@@ -416,6 +416,7 @@ export class CausesComponent implements OnInit {
     this.selectedFileName = '';
     this.selectedFileSize = '';
     this.filePreviewUrl = null;
+    this.formData.image_url = '';
     if (inputElem) {
       inputElem.value = '';
     }
@@ -466,10 +467,16 @@ export class CausesComponent implements OnInit {
     fd.append('featured', this.formData.featured ? '1' : '0');
     fd.append('folder', '/assets/causes');
 
-    if (this.imageSourceMode === 'upload' && this.selectedFile) {
-      fd.append('image', this.selectedFile);
-    } else if (this.formData.image_url) {
-      fd.append('image_url', this.formData.image_url);
+    if (this.imageSourceMode === 'upload') {
+      if (this.selectedFile) {
+        fd.append('image', this.selectedFile);
+      } else if (!this.filePreviewUrl) {
+        fd.append('image_url', '');
+      } else if (this.formData.image_url) {
+        fd.append('image_url', this.formData.image_url);
+      }
+    } else {
+      fd.append('image_url', this.formData.image_url || '');
     }
 
     if (this.isEditing()) {
